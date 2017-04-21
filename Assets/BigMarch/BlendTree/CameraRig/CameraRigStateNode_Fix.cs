@@ -15,6 +15,7 @@ public class CameraRigStateNode_Fix : Node
 	void Awake()
 	{
 		_cached = new CameraRigBlendData();
+		Debug.Log(BlendTree);
 	}
 
 	void Update()

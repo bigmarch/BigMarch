@@ -21,6 +21,7 @@ public class CameraRigStateNode_FreeRotation : Node
 
 	void Update()
 	{
+
 	}
 
 	public override BlendData GetResult()
