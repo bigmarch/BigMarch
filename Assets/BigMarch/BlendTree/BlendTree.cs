@@ -41,10 +41,11 @@ namespace BigMarch.BlendTree
 
 		void Awake()
 		{
-			BlendNode[] blendNodeArr = GetComponentsInChildren<BlendNode>();
 #if UNITY_EDITOR
-			CheckAllBlendNodeError(blendNodeArr);
+			CheckAllChildError(Outlet.transform);
 #endif
+
+			BlendNode[] blendNodeArr = GetComponentsInChildren<BlendNode>();
 			_blendNodeDic = new Dictionary<string, BlendNode>();
 			foreach (BlendNode bn in blendNodeArr)
 			{
@@ -52,7 +53,7 @@ namespace BigMarch.BlendTree
 			}
 		}
 
-		public void AutoSetupAllBlendNode()
+		public void AutoSetup()
 		{
 			Assert.IsTrue(transform.childCount == 1, "transform.childCount == 1");
 
@@ -67,26 +68,45 @@ namespace BigMarch.BlendTree
 				{
 					bn.AutoSetUpstreamList();
 				}
+
+				AddNode an = allBn[i] as AddNode;
+				if (an)
+				{
+					an.AutoSetUpstreamList();
+				}
 			}
 
-			CheckAllBlendNodeError(allBn);
+			CheckAllChildError(Outlet.transform);
 		}
 
 		// 未雨绸缪，检查所有错误。
-		private static void CheckAllBlendNodeError(Node[] allNode)
+		private static void CheckAllChildError(Transform rootTransform)
 		{
 			List<string> listForCheckRepetition = new List<string>();
-			foreach (Node node in allNode)
+
+			Transform[] allChildTransform = rootTransform.GetComponentsInChildren<Transform>();
+
+			foreach (Transform t in allChildTransform)
 			{
-				BlendNode bn = node as BlendNode;
+				string errorLog = string.Format("Error in Node: {0}", t.name);
+
+				// NodeName必须有意义，不能为空。
+				Assert.IsFalse(string.IsNullOrEmpty(t.name), errorLog);
+
+				// NodeName必须唯一。
+				int indexOfResult = listForCheckRepetition.IndexOf(t.name);
+				Assert.IsTrue(indexOfResult == -1, errorLog);
+				listForCheckRepetition.Add(t.name);
+
+				Node n = t.GetComponent<Node>();
+				//必须有node组件
+				Assert.IsNotNull(n, errorLog);
+
+				BlendNode bn = n as BlendNode;
+				AddNode an = n as AddNode;
+
 				if (bn)
 				{
-					// 所有blend tree下的节点，必须挂着Node组件。
-					string log = string.Format("game object: {0} need a Node Component.", bn.name);
-					Assert.IsNotNull(bn, log);
-
-					string errorLog = string.Format("Error in Node: {0}", bn.name);
-
 					// list不能为空。
 					Assert.IsNotNull(bn.UpstreamList, errorLog);
 					Assert.IsTrue(bn.UpstreamList.Count > 0, errorLog);
@@ -105,14 +125,13 @@ namespace BigMarch.BlendTree
 						BlendNode.Pair next = bn.UpstreamList[j + 1];
 						Assert.IsTrue(next.Threshold > curret.Threshold, errorLog);
 					}
+				}
 
-					// NodeName必须有意义，不能为空。
-					Assert.IsFalse(string.IsNullOrEmpty(bn.name), errorLog);
-
-					// NodeName必须唯一。
-					int indexOfResult = listForCheckRepetition.IndexOf(bn.name);
-					Assert.IsTrue(indexOfResult == -1, errorLog);
-					listForCheckRepetition.Add(bn.name);
+				if (an)
+				{
+					// list不能为空。
+					Assert.IsNotNull(an.UpstreamList, errorLog);
+					Assert.IsTrue(an.UpstreamList.Count > 0, errorLog);
 				}
 			}
 		}

@@ -7,7 +7,7 @@ namespace BigMarch.BlendTree
 		[SerializeField]
 		private BlendTree _blendTree;
 
-		public BlendTree BlendTree
+		protected BlendTree BlendTree
 		{
 			get { return _blendTree; }
 		}

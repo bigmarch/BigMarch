@@ -25,4 +25,14 @@ public class CameraRigBlendData : BlendData
 		LocalRotation = t.LocalRotation;
 		FovRatio = t.FovRatio;
 	}
+
+	public override void CaculateAdd(BlendData lhs, BlendData rhs)
+	{
+		CameraRigBlendData l = (CameraRigBlendData) lhs;
+		CameraRigBlendData r = (CameraRigBlendData) rhs;
+
+		LocalPosition = l.LocalPosition + r.LocalPosition;
+		LocalRotation = l.LocalRotation * r.LocalRotation;
+		FovRatio = l.FovRatio + r.FovRatio;
+	}
 }

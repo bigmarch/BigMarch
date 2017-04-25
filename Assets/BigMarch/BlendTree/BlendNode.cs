@@ -10,38 +10,17 @@ namespace BigMarch.BlendTree
 		public class Pair
 		{
 			public Node Node;
+			[Range(0, 1)]
 			public float Threshold;
 		}
 
+
+		[Range(0, 1)]
+		public float CurrentWeight = 0.5f;
+
 		public List<Pair> UpstreamList;
-		[Range(0, 1)] public float CurrentWeight = 0.5f;
 
 		private BlendData _cached;
-
-		public BlendNode()
-		{
-		}
-
-		public void Clear()
-		{
-			UpstreamList.Clear();
-		}
-
-		public void AddUpstream(Node node, float threshold)
-		{
-			if (UpstreamList == null)
-			{
-				UpstreamList = new List<Pair>();
-			}
-
-			var pair = new Pair
-			{
-				Node = node,
-				Threshold = threshold
-			};
-
-			UpstreamList.Add(pair);
-		}
 
 		public override BlendData GetResult()
 		{
@@ -83,11 +62,17 @@ namespace BigMarch.BlendTree
 			throw new Exception(string.Format("can not get blend data, current weight{0}", CurrentWeight));
 		}
 
-
 		// 根据hierarchy总的层级关系，递归的初始化所有的节点。
 		public void AutoSetUpstreamList()
 		{
-			Clear();
+			if (UpstreamList == null)
+			{
+				UpstreamList = new List<Pair>();
+			}
+			else
+			{
+				UpstreamList.Clear();
+			}
 
 			int childCount = transform.childCount;
 			for (int i = 0; i < childCount; i++)
@@ -96,7 +81,13 @@ namespace BigMarch.BlendTree
 
 				Node childNode = child.GetComponent<Node>();
 
-				AddUpstream(childNode, 1f * i / (childCount - 1));
+				var pair = new Pair
+				{
+					Node = childNode,
+					Threshold = 1f * i / (childCount - 1)
+				};
+
+				UpstreamList.Add(pair);
 			}
 		}
 	}

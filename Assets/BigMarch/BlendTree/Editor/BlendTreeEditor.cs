@@ -19,15 +19,13 @@ namespace BigMarch.BlendTree
 
 			if (GUILayout.Button("Auto Setup"))
 			{
-				bt.AutoSetupAllBlendNode();
+				bt.AutoSetup();
 			}
 
 			if (!EditorGUI.EndChangeCheck())
 			{
 				Undo.RecordObject(bt, "BlendTreeEditor");
 			}
-
-
 
 			EditorGUILayout.Space();
 			_showDefaultInspector = EditorGUILayout.ToggleLeft("Show Default Inspector", _showDefaultInspector);

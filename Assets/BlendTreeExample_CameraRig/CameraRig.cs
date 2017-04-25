@@ -8,8 +8,8 @@ public class CameraRig : MonoBehaviour
 	public BlendTree BlendTree;
 	public Camera Camera;
 
-	public const string BlendNode_ToFreeRotation = "BlendNode_ToFreeRotation";
-	public const string BlendNode_ToScope = "BlendNode_ToScope";
+	public const string BlendNode_ToFreeRotation = "BlendNode_Root";
+	public const string BlendNode_ToScope = "BlendNode_Fix";
 	public const string BlendNode_NormalPositions = "BlendNode_NormalPositions";
 
 	[Range(0, 1)] public float Weight_ToFreeRotation;
