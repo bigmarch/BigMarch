@@ -32,7 +32,9 @@ public class CameraRig : MonoBehaviour
 		// 2，从tree获得result。
 		CameraRigBlendData data = BlendTree.GetResult() as CameraRigBlendData;
 		Camera.transform.localPosition = data.LocalPosition;
-		Camera.transform.localRotation = data.LocalRotation;		
+		Camera.transform.localRotation = data.LocalRotation;
+		Camera.fieldOfView = data.FovRatio * 60;
+
 		Debug.Log(data.LocalPosition + "  " + data.LocalRotation.eulerAngles + "  " + data.FovRatio);
 	}
 }
