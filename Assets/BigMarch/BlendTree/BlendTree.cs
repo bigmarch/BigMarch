@@ -14,43 +14,42 @@ namespace BigMarch.BlendTree
 			get { return _owner; }
 		}
 
-		private Dictionary<string, BlendNode> _blendNodeDic;
+		private Dictionary<string, Node> _nodeDic;
+
+		public Node GetNode(string nodeName)
+		{
+			if (_nodeDic == null)
+			{
+#if UNITY_EDITOR
+				CheckAllChildError(Outlet.transform);
+#endif
+
+				Node[] blendNodeArr = GetComponentsInChildren<Node>();
+				_nodeDic = new Dictionary<string, Node>();
+				foreach (Node bn in blendNodeArr)
+				{
+					_nodeDic.Add(bn.name, bn);
+				}
+			}
+
+			Node node;
+			if (_nodeDic.TryGetValue(nodeName, out node))
+			{
+				return node;
+			}
+			Debug.LogError(nodeName + " not found");
+			return null;
+		}
 
 		public void Setup(MonoBehaviour owner)
 		{
 			_owner = owner;
 		}
 
-		// 得到指定的blend node的weight
-		public float GetBlendNodeWeight(string nodeName)
-		{
-			return _blendNodeDic[nodeName].CurrentWeight;
-		}
-
-		// 设置指定的blend node的weight
-		public void SetBlendNodeWeight(string nodeName, float weight)
-		{
-			_blendNodeDic[nodeName].CurrentWeight = weight;
-		}
-
 		// 计算结果
 		public BlendData GetResult()
 		{
 			return Outlet.GetResult();
-		}
-
-		void Awake()
-		{
-#if UNITY_EDITOR
-			CheckAllChildError(Outlet.transform);
-#endif
-
-			BlendNode[] blendNodeArr = GetComponentsInChildren<BlendNode>();
-			_blendNodeDic = new Dictionary<string, BlendNode>();
-			foreach (BlendNode bn in blendNodeArr)
-			{
-				_blendNodeDic.Add(bn.name, bn);
-			}
 		}
 
 		public void AutoSetup()

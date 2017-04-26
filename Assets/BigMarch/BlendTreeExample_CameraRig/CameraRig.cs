@@ -8,26 +8,40 @@ public class CameraRig : MonoBehaviour
 	public BlendTree BlendTree;
 	public Camera Camera;
 
-	public const string BlendNode_ToFreeRotation = "BlendNode_Root";
-	public const string BlendNode_ToScope = "BlendNode_Fix";
-	public const string BlendNode_NormalPositions = "BlendNode_NormalPositions";
+	private BlendNode _root;
+	private BlendNode _fix;
+	private BlendNode _normalPositions;
 
-	[Range(0, 1)] public float Weight_ToFreeRotation;
-	[Range(0, 1)] public float Weight_ToScope;
+	private CameraRigStateNode_Shake _normalHitShake;
+	private CameraRigStateNode_Shake _normalHurtShake;
+	private CameraRigStateNode_Shake _scopeHitShake;
+	private CameraRigStateNode_Shake _scopeHurtShake;
+
+	[Range(0, 1)] public float Weight_Root;
+	[Range(0, 1)] public float Weight_Fix;
 	[Range(0, 1)] public float Weight_NormalPositions;
 
-	void Start()
+	void Awake()
 	{
-		BlendTree.Setup(this);		
+		BlendTree.Setup(this);
+
+		_root = BlendTree.GetNode("BlendNode_Root") as BlendNode;
+		_fix = BlendTree.GetNode("BlendNode_Fix") as BlendNode;
+		_normalPositions = BlendTree.GetNode("BlendNode_NormalPositions") as BlendNode;
+
+		_normalHitShake = BlendTree.GetNode("StateNode_NormalHitShake") as CameraRigStateNode_Shake;
+		_normalHurtShake = BlendTree.GetNode("StateNode_NormalHurtShake") as CameraRigStateNode_Shake;
+		_scopeHitShake = BlendTree.GetNode("StateNode_ScopeHitShake") as CameraRigStateNode_Shake;
+		_scopeHurtShake = BlendTree.GetNode("StateNode_ScopeHurtShake") as CameraRigStateNode_Shake;
 	}
 
 	// Update is called once per frame
 	void Update()
 	{
 		// 1，设置各个blend node中的weight
-		BlendTree.SetBlendNodeWeight(BlendNode_ToFreeRotation, Weight_ToFreeRotation);
-		BlendTree.SetBlendNodeWeight(BlendNode_ToScope, Weight_ToScope);
-		BlendTree.SetBlendNodeWeight(BlendNode_NormalPositions, Weight_NormalPositions);
+		_root.CurrentWeight = Weight_Root;
+		_fix.CurrentWeight = Weight_Fix;
+		_normalPositions.CurrentWeight = Weight_NormalPositions;
 
 		// 2，从tree获得result。
 		CameraRigBlendData data = BlendTree.GetResult() as CameraRigBlendData;
@@ -36,5 +50,19 @@ public class CameraRig : MonoBehaviour
 		Camera.fieldOfView = data.FovRatio * 60;
 
 		Debug.Log(data.LocalPosition + "  " + data.LocalRotation.eulerAngles + "  " + data.FovRatio);
+	}
+
+	[ContextMenu("Hit Shake")]
+	public void HitShake()
+	{
+		_normalHitShake.Shake();
+		_scopeHitShake.Shake();
+	}
+
+	[ContextMenu("Hurt Shake")]
+	public void HurtShake()
+	{
+		_normalHurtShake.Shake();
+		_scopeHurtShake.Shake();
 	}
 }
