@@ -8,12 +8,16 @@
 
 2，	AddNode或者BlendNode，用于组织各个节点。从子节点得到数据之后，前者将它们想加，后者将它们混合。
 	AddNode和BlendNode不能是子节点。
-	AddNode和BlendNode必须使用BigMarch的。
+	AddNode和BlendNode必须使用BigMarch的，不需要使用者实现。
 
 3，	BlendTree，树根。提供一个AutoSetup按钮，用于初始化。
-	BlendTree必须使用BigMarch的。
+	BlendTree必须使用BigMarch的，不需要使用者实现。
 
-4，	使用BlendTree的客户，通过BlendTree的引用，设置各个BlendNode的Weight，或者向各个StateNode发消息。
+4，	使用BlendTree的客户，（粒子中的CamerRig类）。通过BlendTree设置各个BlendNode的Weight，或者向各个StateNode发消息。
+	需要使用者自己实现。
+
+5，	BlendData，各个节点之间传递的数据类型。
+	需要使用者自己实现，继承BlendData类。
 
 
 
