@@ -21,7 +21,25 @@ public class CameraRigStateNode_FreeRotation : Node
 
 	void Update()
 	{
+		if (Input.GetKey(KeyCode.A))
+		{
+			Angle.x += Time.deltaTime * 90;
+		}
 
+		if (Input.GetKey(KeyCode.D))
+		{
+			Angle.x -= Time.deltaTime * 90;
+		}
+
+		if (Input.GetKey(KeyCode.W))
+		{
+			Angle.y += Time.deltaTime * 90;
+		}
+
+		if (Input.GetKey(KeyCode.S))
+		{
+			Angle.y -= Time.deltaTime * 90;
+		}
 	}
 
 	public override BlendData GetResult()

@@ -49,7 +49,7 @@ public class CameraRig : MonoBehaviour
 		Camera.transform.localRotation = data.LocalRotation;
 		Camera.fieldOfView = data.FovRatio * 60;
 
-		Debug.Log(data.LocalPosition + "  " + data.LocalRotation.eulerAngles + "  " + data.FovRatio);
+//		Debug.Log(data.LocalPosition + "  " + data.LocalRotation.eulerAngles + "  " + data.FovRatio);
 	}
 
 	[ContextMenu("Hit Shake")]
