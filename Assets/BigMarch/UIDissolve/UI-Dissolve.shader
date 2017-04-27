@@ -22,7 +22,6 @@ Shader "UI/Dissolve"
 		[Space][Space][Space]
 		
 		[NoScaleOffset]_DissolveTex ("Dissolve Texture", 2D) = "white" {}
-		_WorldPositionToDissolveUv ("World Position To Dissolve Uv", Range(0, 0.5)) = 0.01
 		_DissolveWidth ("Dissolve Width", Range(0, 1)) = 0
 		_DissolveAmount ("Dissolve Amount", Range(0, 1)) = 0
 	}
@@ -72,6 +71,7 @@ Shader "UI/Dissolve"
 				float4 vertex   : POSITION;
 				float4 color    : COLOR;
 				float2 texcoord : TEXCOORD0;
+				float2 texcoord1 : TEXCOORD1;
 				UNITY_VERTEX_INPUT_INSTANCE_ID
 			};
 
@@ -81,6 +81,7 @@ Shader "UI/Dissolve"
 				fixed4 color    : COLOR;
 				float2 texcoord  : TEXCOORD0;
 				float4 worldPosition : TEXCOORD1;
+				float2 dissolveUv : TEXCOORD2;
 				UNITY_VERTEX_OUTPUT_STEREO
 			};
 			
@@ -97,15 +98,16 @@ Shader "UI/Dissolve"
 				OUT.vertex = UnityObjectToClipPos(OUT.worldPosition);
 
 				OUT.texcoord = IN.texcoord;
-				
+				OUT.dissolveUv = IN.texcoord1;
+
 				OUT.color = IN.color * _Color;
+	
 				return OUT;
 			}
 
 			sampler2D _MainTex;
 
 			half _DissolveWidth;
-			half _WorldPositionToDissolveUv;
 			half _DissolveAmount;
 			sampler2D _DissolveTex;
 
@@ -116,9 +118,8 @@ Shader "UI/Dissolve"
 				half4 color = (tex2D(_MainTex, IN.texcoord) + _TextureSampleAdd) * IN.color;
 				
 				// Dissolve the combined color
-				fixed2 dissolveUv = frac(IN.worldPosition.xy*_WorldPositionToDissolveUv);
-				float dissolve = tex2D(_DissolveTex, TRANSFORM_TEX(dissolveUv, _DissolveTex));
-				//return half4(dissolveUv.xy, 1, 1);
+				float dissolve = tex2D(_DissolveTex, IN.dissolveUv.xy).r;
+				//return half4(dissolve.xxx, 1);
 				float halfDissolveWidth = _DissolveWidth * 0.5;
 				color.a *= smoothstep(_DissolveAmount - halfDissolveWidth, _DissolveAmount + halfDissolveWidth, dissolve);
 
