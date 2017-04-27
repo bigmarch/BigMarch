@@ -6,7 +6,7 @@
 	StateNode不能有子节点。
 	StateNode需要使用者自己定制，继承Node节点，实现GetResult方法。
 
-2，	AddNode或者BlendNode，用于组织各个节点。从子节点得到数据之后，前者将它们想加，后者将它们混合。
+2，	AddNode或者BlendNode，用于组织各个节点。从子节点得到数据之后，前者将它们相加，后者将它们混合。
 	AddNode和BlendNode不能是子节点。
 	AddNode和BlendNode必须使用BigMarch的，不需要使用者实现。
 
@@ -24,8 +24,13 @@
 ----------------------------------------------------------------------------------------------------
 BlendTreeExample_CameraRig查看指南
 
+需求：摄像机分为两个模式：“自由旋转模式 FreeRotation”，“固定跟随模式 Fix”。
+其中“固定跟随模式”又分为：“普通模式 Normal”，“开镜模式 Scope”。
+其中“普通模式 Normal”又分为：“前进”，“静止”，“后退”，“氮气瞬间加速”，“氮气持续加速”。
+
+
 1、	将五个普通状态下的camera position进行混合，五个位置分别代表五种状态下的camera位置。，“前进”，“静止”，“后退”，“氮气瞬间加速”，“氮气持续加速”。
-	这个5个StateNode分别是： StateNode_Back，StateNode_Idle，StateNode_Forward，StateNode_N2oStart，StateNode_N2oStay。
+	这五个StateNode分别是： StateNode_Back，StateNode_Idle，StateNode_Forward，StateNode_N2oStart，StateNode_N2oStay。
 	他们的父节点是：BlendNode_NormalPositions（表示normal状态下的位置。）
 
 2、	将普通状态下的camera position和shake节点进行混合。
