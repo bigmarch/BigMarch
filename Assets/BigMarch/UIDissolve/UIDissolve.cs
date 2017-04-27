@@ -73,7 +73,7 @@ namespace BigMarch.UIDissolve
 		{
 			DestroyImmediate(_mat);
 			_mat = null;
-			graphic.material = null;
+			graphic.material = graphic.defaultMaterial;
 		}
 
 		private void RefreshMaterail()
