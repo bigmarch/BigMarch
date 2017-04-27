@@ -12,10 +12,8 @@ namespace BigMarch.UIDissolve
 	{
 		public float Uv1Scale = 0.1f;
 		public Texture DissolveTexture;
-		[Range(0, 1)]
-		public float DissolveWidth = .5f;
-		[Range(0, 1)]
-		public float DissolveAmount = 0;
+		[Range(0, 1)] public float DissolveWidth = .5f;
+		[Range(0, 1)] public float DissolveAmount = 0;
 
 		private Material _mat;
 
@@ -23,6 +21,10 @@ namespace BigMarch.UIDissolve
 
 		public override void ModifyMesh(VertexHelper vh)
 		{
+			if (!graphic.canvas)
+			{
+				return;
+			}
 			bool uv1Enable = (graphic.canvas.additionalShaderChannels & AdditionalCanvasShaderChannels.TexCoord1) != 0;
 			Assert.IsTrue(uv1Enable, "Need Canvas config texcoord1");
 
@@ -59,14 +61,12 @@ namespace BigMarch.UIDissolve
 
 		protected override void OnEnable()
 		{
-			graphic.SetVerticesDirty();
-			RefreshMaterail();
+			Refresh();
 		}
 
 		protected override void OnValidate()
 		{
-			graphic.SetVerticesDirty();
-			RefreshMaterail();
+			Refresh();
 		}
 
 		protected override void OnDisable()
@@ -89,6 +89,12 @@ namespace BigMarch.UIDissolve
 			_mat.SetFloat("_DissolveAmount", DissolveAmount);
 
 			graphic.material = _mat;
+		}
+
+		public void Refresh()
+		{
+			graphic.SetVerticesDirty();
+			RefreshMaterail();
 		}
 	}
 }
