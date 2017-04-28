@@ -5,7 +5,7 @@
 // Use Before: v = new Vector3(v.x, 0, v.z);	
 // Use After: v = v.Swizzle_x0z();  
 
-// Use Before: transform.position = new Vector3(transform.position.x, 0, transform.position.y);
+// Use Before: transform.position = new Vector3(transform.position.x, 0, transform.position.z);
 // Use After: transform.position = transform.position.Swizzle_x0z();  
 
 
