@@ -1,4 +1,8 @@
-﻿using UnityEngine;
+﻿// 不但实现了unity CG shader中的swizzle，还扩展了0和1。
+// 只需轻轻一句v = v.Swizzle_x0z(); 即可轻松应对 v = new Vector3(v.x, 0, v.z); 的情况。
+// 如果想把transform放到地面，只需transform.position = transform.position.Swizzle_x0z()。
+
+using UnityEngine;
 
 namespace BigMarch.Swizzle
 {
