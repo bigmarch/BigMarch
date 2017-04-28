@@ -45,7 +45,7 @@ namespace BigMarch.Swizzle
 
 		private string GenerateVector2()
 		{
-			string[] components = {"x", "y"};
+			string[] components = {"x", "y", "0", "1"};
 			string result = "";
 
 			for (int x = 0; x < components.Length; x++)
@@ -57,11 +57,14 @@ namespace BigMarch.Swizzle
 					string componentY = components[y];
 
 					string methond = string.Format(
-						"public static {0} {1}{2}(this {0} v)" +
+						"public static {0} Swizzle{1}{2}(this {0} v)" +
 						"{{return new {0}(v.{1}, v.{2});}}\n",
 						"Vector2",
 						componentX,
 						componentY);
+
+					methond = methond.Replace("v.0", "0");
+					methond = methond.Replace("v.1", "1");
 
 					result += methond;
 				}
@@ -72,7 +75,7 @@ namespace BigMarch.Swizzle
 
 		private string GenerateVector3()
 		{
-			string[] components = {"x", "y", "z"};
+			string[] components = {"x", "y", "z", "0", "1" };
 			string result = "";
 
 			for (int x = 0; x < components.Length; x++)
@@ -88,12 +91,15 @@ namespace BigMarch.Swizzle
 						string componentZ = components[z];
 
 						string methond = string.Format(
-							"public static {0} {1}{2}{3}(this {0} v)" +
+							"public static {0} Swizzle{1}{2}{3}(this {0} v)" +
 							"{{return new {0}(v.{1}, v.{2}, v.{3});}}\n",
 							"Vector3",
 							componentX,
 							componentY,
 							componentZ);
+
+						methond = methond.Replace("v.0", "0");
+						methond = methond.Replace("v.1", "1");
 
 						result += methond;
 					}
@@ -105,7 +111,7 @@ namespace BigMarch.Swizzle
 
 		private string GenerateVector4()
 		{
-			string[] components = {"x", "y", "z", "w"};
+			string[] components = {"x", "y", "z", "w", "0", "1" };
 			string result = "";
 
 			for (int x = 0; x < components.Length; x++)
@@ -125,13 +131,16 @@ namespace BigMarch.Swizzle
 							string componentW = components[w];
 
 							string methond = string.Format(
-								"public static {0} {1}{2}{3}{4}(this {0} v)" +
+								"public static {0} Swizzle{1}{2}{3}{4}(this {0} v)" +
 								"{{return new {0}(v.{1}, v.{2}, v.{3}, v.{4});}}\n",
 								"Vector4",
 								componentX,
 								componentY,
 								componentZ,
 								componentW);
+
+							methond = methond.Replace("v.0", "0");
+							methond = methond.Replace("v.1", "1");
 
 							result += methond;
 						}
@@ -144,7 +153,7 @@ namespace BigMarch.Swizzle
 
 		private string GenerateColor()
 		{
-			string[] components = {"r", "g", "b", "a"};
+			string[] components = {"r", "g", "b", "a", "0", "1" };
 			string result = "";
 
 			for (int x = 0; x < components.Length; x++)
@@ -164,13 +173,16 @@ namespace BigMarch.Swizzle
 							string componentW = components[w];
 
 							string methond = string.Format(
-								"public static {0} {1}{2}{3}{4}(this {0} v)" +
+								"public static {0} Swizzle{1}{2}{3}{4}(this {0} v)" +
 								"{{return new {0}(v.{1}, v.{2}, v.{3}, v.{4});}}\n",
 								"Color",
 								componentX,
 								componentY,
 								componentZ,
 								componentW);
+
+							methond = methond.Replace("v.0", "0");
+							methond = methond.Replace("v.1", "1");
 
 							result += methond;
 						}
@@ -182,7 +194,7 @@ namespace BigMarch.Swizzle
 
 		private string GenerateColor32()
 		{
-			string[] components = { "r", "g", "b", "a" };
+			string[] components = {"r", "g", "b", "a", "0", "1"};
 			string result = "";
 
 			for (int x = 0; x < components.Length; x++)
@@ -202,13 +214,16 @@ namespace BigMarch.Swizzle
 							string componentW = components[w];
 
 							string methond = string.Format(
-								"public static {0} {1}{2}{3}{4}(this {0} v)" +
+								"public static {0} Swizzle{1}{2}{3}{4}(this {0} v)" +
 								"{{return new {0}(v.{1}, v.{2}, v.{3}, v.{4});}}\n",
 								"Color32",
 								componentX,
 								componentY,
 								componentZ,
 								componentW);
+
+							methond = methond.Replace("v.0", "0");
+							methond = methond.Replace("v.1", "255");
 
 							result += methond;
 						}
