@@ -18,12 +18,8 @@ namespace BigMarch.Swizzle
 		public static Vector2 Swizzle_y1(this Vector2 v) { return new Vector2(v.y, 1); }
 		public static Vector2 Swizzle_0x(this Vector2 v) { return new Vector2(0, v.x); }
 		public static Vector2 Swizzle_0y(this Vector2 v) { return new Vector2(0, v.y); }
-		public static Vector2 Swizzle_00(this Vector2 v) { return new Vector2(0, 0); }
-		public static Vector2 Swizzle_01(this Vector2 v) { return new Vector2(0, 1); }
 		public static Vector2 Swizzle_1x(this Vector2 v) { return new Vector2(1, v.x); }
 		public static Vector2 Swizzle_1y(this Vector2 v) { return new Vector2(1, v.y); }
-		public static Vector2 Swizzle_10(this Vector2 v) { return new Vector2(1, 0); }
-		public static Vector2 Swizzle_11(this Vector2 v) { return new Vector2(1, 1); }
 		public static Vector3 Swizzle_xxx(this Vector3 v) { return new Vector3(v.x, v.x, v.x); }
 		public static Vector3 Swizzle_xxy(this Vector3 v) { return new Vector3(v.x, v.x, v.y); }
 		public static Vector3 Swizzle_xxz(this Vector3 v) { return new Vector3(v.x, v.x, v.z); }
@@ -117,13 +113,9 @@ namespace BigMarch.Swizzle
 		public static Vector3 Swizzle_00x(this Vector3 v) { return new Vector3(0, 0, v.x); }
 		public static Vector3 Swizzle_00y(this Vector3 v) { return new Vector3(0, 0, v.y); }
 		public static Vector3 Swizzle_00z(this Vector3 v) { return new Vector3(0, 0, v.z); }
-		public static Vector3 Swizzle_000(this Vector3 v) { return new Vector3(0, 0, 0); }
-		public static Vector3 Swizzle_001(this Vector3 v) { return new Vector3(0, 0, 1); }
 		public static Vector3 Swizzle_01x(this Vector3 v) { return new Vector3(0, 1, v.x); }
 		public static Vector3 Swizzle_01y(this Vector3 v) { return new Vector3(0, 1, v.y); }
 		public static Vector3 Swizzle_01z(this Vector3 v) { return new Vector3(0, 1, v.z); }
-		public static Vector3 Swizzle_010(this Vector3 v) { return new Vector3(0, 1, 0); }
-		public static Vector3 Swizzle_011(this Vector3 v) { return new Vector3(0, 1, 1); }
 		public static Vector3 Swizzle_1xx(this Vector3 v) { return new Vector3(1, v.x, v.x); }
 		public static Vector3 Swizzle_1xy(this Vector3 v) { return new Vector3(1, v.x, v.y); }
 		public static Vector3 Swizzle_1xz(this Vector3 v) { return new Vector3(1, v.x, v.z); }
@@ -142,13 +134,9 @@ namespace BigMarch.Swizzle
 		public static Vector3 Swizzle_10x(this Vector3 v) { return new Vector3(1, 0, v.x); }
 		public static Vector3 Swizzle_10y(this Vector3 v) { return new Vector3(1, 0, v.y); }
 		public static Vector3 Swizzle_10z(this Vector3 v) { return new Vector3(1, 0, v.z); }
-		public static Vector3 Swizzle_100(this Vector3 v) { return new Vector3(1, 0, 0); }
-		public static Vector3 Swizzle_101(this Vector3 v) { return new Vector3(1, 0, 1); }
 		public static Vector3 Swizzle_11x(this Vector3 v) { return new Vector3(1, 1, v.x); }
 		public static Vector3 Swizzle_11y(this Vector3 v) { return new Vector3(1, 1, v.y); }
 		public static Vector3 Swizzle_11z(this Vector3 v) { return new Vector3(1, 1, v.z); }
-		public static Vector3 Swizzle_110(this Vector3 v) { return new Vector3(1, 1, 0); }
-		public static Vector3 Swizzle_111(this Vector3 v) { return new Vector3(1, 1, 1); }
 		public static Vector4 Swizzle_xxxx(this Vector4 v) { return new Vector4(v.x, v.x, v.x, v.x); }
 		public static Vector4 Swizzle_xxxy(this Vector4 v) { return new Vector4(v.x, v.x, v.x, v.y); }
 		public static Vector4 Swizzle_xxxz(this Vector4 v) { return new Vector4(v.x, v.x, v.x, v.z); }
@@ -1185,14 +1173,10 @@ namespace BigMarch.Swizzle
 		public static Vector4 Swizzle_000y(this Vector4 v) { return new Vector4(0, 0, 0, v.y); }
 		public static Vector4 Swizzle_000z(this Vector4 v) { return new Vector4(0, 0, 0, v.z); }
 		public static Vector4 Swizzle_000w(this Vector4 v) { return new Vector4(0, 0, 0, v.w); }
-		public static Vector4 Swizzle_0000(this Vector4 v) { return new Vector4(0, 0, 0, 0); }
-		public static Vector4 Swizzle_0001(this Vector4 v) { return new Vector4(0, 0, 0, 1); }
 		public static Vector4 Swizzle_001x(this Vector4 v) { return new Vector4(0, 0, 1, v.x); }
 		public static Vector4 Swizzle_001y(this Vector4 v) { return new Vector4(0, 0, 1, v.y); }
 		public static Vector4 Swizzle_001z(this Vector4 v) { return new Vector4(0, 0, 1, v.z); }
 		public static Vector4 Swizzle_001w(this Vector4 v) { return new Vector4(0, 0, 1, v.w); }
-		public static Vector4 Swizzle_0010(this Vector4 v) { return new Vector4(0, 0, 1, 0); }
-		public static Vector4 Swizzle_0011(this Vector4 v) { return new Vector4(0, 0, 1, 1); }
 		public static Vector4 Swizzle_01xx(this Vector4 v) { return new Vector4(0, 1, v.x, v.x); }
 		public static Vector4 Swizzle_01xy(this Vector4 v) { return new Vector4(0, 1, v.x, v.y); }
 		public static Vector4 Swizzle_01xz(this Vector4 v) { return new Vector4(0, 1, v.x, v.z); }
@@ -1221,14 +1205,10 @@ namespace BigMarch.Swizzle
 		public static Vector4 Swizzle_010y(this Vector4 v) { return new Vector4(0, 1, 0, v.y); }
 		public static Vector4 Swizzle_010z(this Vector4 v) { return new Vector4(0, 1, 0, v.z); }
 		public static Vector4 Swizzle_010w(this Vector4 v) { return new Vector4(0, 1, 0, v.w); }
-		public static Vector4 Swizzle_0100(this Vector4 v) { return new Vector4(0, 1, 0, 0); }
-		public static Vector4 Swizzle_0101(this Vector4 v) { return new Vector4(0, 1, 0, 1); }
 		public static Vector4 Swizzle_011x(this Vector4 v) { return new Vector4(0, 1, 1, v.x); }
 		public static Vector4 Swizzle_011y(this Vector4 v) { return new Vector4(0, 1, 1, v.y); }
 		public static Vector4 Swizzle_011z(this Vector4 v) { return new Vector4(0, 1, 1, v.z); }
 		public static Vector4 Swizzle_011w(this Vector4 v) { return new Vector4(0, 1, 1, v.w); }
-		public static Vector4 Swizzle_0110(this Vector4 v) { return new Vector4(0, 1, 1, 0); }
-		public static Vector4 Swizzle_0111(this Vector4 v) { return new Vector4(0, 1, 1, 1); }
 		public static Vector4 Swizzle_1xxx(this Vector4 v) { return new Vector4(1, v.x, v.x, v.x); }
 		public static Vector4 Swizzle_1xxy(this Vector4 v) { return new Vector4(1, v.x, v.x, v.y); }
 		public static Vector4 Swizzle_1xxz(this Vector4 v) { return new Vector4(1, v.x, v.x, v.z); }
@@ -1401,14 +1381,10 @@ namespace BigMarch.Swizzle
 		public static Vector4 Swizzle_100y(this Vector4 v) { return new Vector4(1, 0, 0, v.y); }
 		public static Vector4 Swizzle_100z(this Vector4 v) { return new Vector4(1, 0, 0, v.z); }
 		public static Vector4 Swizzle_100w(this Vector4 v) { return new Vector4(1, 0, 0, v.w); }
-		public static Vector4 Swizzle_1000(this Vector4 v) { return new Vector4(1, 0, 0, 0); }
-		public static Vector4 Swizzle_1001(this Vector4 v) { return new Vector4(1, 0, 0, 1); }
 		public static Vector4 Swizzle_101x(this Vector4 v) { return new Vector4(1, 0, 1, v.x); }
 		public static Vector4 Swizzle_101y(this Vector4 v) { return new Vector4(1, 0, 1, v.y); }
 		public static Vector4 Swizzle_101z(this Vector4 v) { return new Vector4(1, 0, 1, v.z); }
 		public static Vector4 Swizzle_101w(this Vector4 v) { return new Vector4(1, 0, 1, v.w); }
-		public static Vector4 Swizzle_1010(this Vector4 v) { return new Vector4(1, 0, 1, 0); }
-		public static Vector4 Swizzle_1011(this Vector4 v) { return new Vector4(1, 0, 1, 1); }
 		public static Vector4 Swizzle_11xx(this Vector4 v) { return new Vector4(1, 1, v.x, v.x); }
 		public static Vector4 Swizzle_11xy(this Vector4 v) { return new Vector4(1, 1, v.x, v.y); }
 		public static Vector4 Swizzle_11xz(this Vector4 v) { return new Vector4(1, 1, v.x, v.z); }
@@ -1437,14 +1413,10 @@ namespace BigMarch.Swizzle
 		public static Vector4 Swizzle_110y(this Vector4 v) { return new Vector4(1, 1, 0, v.y); }
 		public static Vector4 Swizzle_110z(this Vector4 v) { return new Vector4(1, 1, 0, v.z); }
 		public static Vector4 Swizzle_110w(this Vector4 v) { return new Vector4(1, 1, 0, v.w); }
-		public static Vector4 Swizzle_1100(this Vector4 v) { return new Vector4(1, 1, 0, 0); }
-		public static Vector4 Swizzle_1101(this Vector4 v) { return new Vector4(1, 1, 0, 1); }
 		public static Vector4 Swizzle_111x(this Vector4 v) { return new Vector4(1, 1, 1, v.x); }
 		public static Vector4 Swizzle_111y(this Vector4 v) { return new Vector4(1, 1, 1, v.y); }
 		public static Vector4 Swizzle_111z(this Vector4 v) { return new Vector4(1, 1, 1, v.z); }
 		public static Vector4 Swizzle_111w(this Vector4 v) { return new Vector4(1, 1, 1, v.w); }
-		public static Vector4 Swizzle_1110(this Vector4 v) { return new Vector4(1, 1, 1, 0); }
-		public static Vector4 Swizzle_1111(this Vector4 v) { return new Vector4(1, 1, 1, 1); }
 		public static Color Swizzle_rrrr(this Color v) { return new Color(v.r, v.r, v.r, v.r); }
 		public static Color Swizzle_rrrg(this Color v) { return new Color(v.r, v.r, v.r, v.g); }
 		public static Color Swizzle_rrrb(this Color v) { return new Color(v.r, v.r, v.r, v.b); }
@@ -2481,14 +2453,10 @@ namespace BigMarch.Swizzle
 		public static Color Swizzle_000g(this Color v) { return new Color(0, 0, 0, v.g); }
 		public static Color Swizzle_000b(this Color v) { return new Color(0, 0, 0, v.b); }
 		public static Color Swizzle_000a(this Color v) { return new Color(0, 0, 0, v.a); }
-		public static Color Swizzle_0000(this Color v) { return new Color(0, 0, 0, 0); }
-		public static Color Swizzle_0001(this Color v) { return new Color(0, 0, 0, 1); }
 		public static Color Swizzle_001r(this Color v) { return new Color(0, 0, 1, v.r); }
 		public static Color Swizzle_001g(this Color v) { return new Color(0, 0, 1, v.g); }
 		public static Color Swizzle_001b(this Color v) { return new Color(0, 0, 1, v.b); }
 		public static Color Swizzle_001a(this Color v) { return new Color(0, 0, 1, v.a); }
-		public static Color Swizzle_0010(this Color v) { return new Color(0, 0, 1, 0); }
-		public static Color Swizzle_0011(this Color v) { return new Color(0, 0, 1, 1); }
 		public static Color Swizzle_01rr(this Color v) { return new Color(0, 1, v.r, v.r); }
 		public static Color Swizzle_01rg(this Color v) { return new Color(0, 1, v.r, v.g); }
 		public static Color Swizzle_01rb(this Color v) { return new Color(0, 1, v.r, v.b); }
@@ -2517,14 +2485,10 @@ namespace BigMarch.Swizzle
 		public static Color Swizzle_010g(this Color v) { return new Color(0, 1, 0, v.g); }
 		public static Color Swizzle_010b(this Color v) { return new Color(0, 1, 0, v.b); }
 		public static Color Swizzle_010a(this Color v) { return new Color(0, 1, 0, v.a); }
-		public static Color Swizzle_0100(this Color v) { return new Color(0, 1, 0, 0); }
-		public static Color Swizzle_0101(this Color v) { return new Color(0, 1, 0, 1); }
 		public static Color Swizzle_011r(this Color v) { return new Color(0, 1, 1, v.r); }
 		public static Color Swizzle_011g(this Color v) { return new Color(0, 1, 1, v.g); }
 		public static Color Swizzle_011b(this Color v) { return new Color(0, 1, 1, v.b); }
 		public static Color Swizzle_011a(this Color v) { return new Color(0, 1, 1, v.a); }
-		public static Color Swizzle_0110(this Color v) { return new Color(0, 1, 1, 0); }
-		public static Color Swizzle_0111(this Color v) { return new Color(0, 1, 1, 1); }
 		public static Color Swizzle_1rrr(this Color v) { return new Color(1, v.r, v.r, v.r); }
 		public static Color Swizzle_1rrg(this Color v) { return new Color(1, v.r, v.r, v.g); }
 		public static Color Swizzle_1rrb(this Color v) { return new Color(1, v.r, v.r, v.b); }
@@ -2697,14 +2661,10 @@ namespace BigMarch.Swizzle
 		public static Color Swizzle_100g(this Color v) { return new Color(1, 0, 0, v.g); }
 		public static Color Swizzle_100b(this Color v) { return new Color(1, 0, 0, v.b); }
 		public static Color Swizzle_100a(this Color v) { return new Color(1, 0, 0, v.a); }
-		public static Color Swizzle_1000(this Color v) { return new Color(1, 0, 0, 0); }
-		public static Color Swizzle_1001(this Color v) { return new Color(1, 0, 0, 1); }
 		public static Color Swizzle_101r(this Color v) { return new Color(1, 0, 1, v.r); }
 		public static Color Swizzle_101g(this Color v) { return new Color(1, 0, 1, v.g); }
 		public static Color Swizzle_101b(this Color v) { return new Color(1, 0, 1, v.b); }
 		public static Color Swizzle_101a(this Color v) { return new Color(1, 0, 1, v.a); }
-		public static Color Swizzle_1010(this Color v) { return new Color(1, 0, 1, 0); }
-		public static Color Swizzle_1011(this Color v) { return new Color(1, 0, 1, 1); }
 		public static Color Swizzle_11rr(this Color v) { return new Color(1, 1, v.r, v.r); }
 		public static Color Swizzle_11rg(this Color v) { return new Color(1, 1, v.r, v.g); }
 		public static Color Swizzle_11rb(this Color v) { return new Color(1, 1, v.r, v.b); }
@@ -2733,14 +2693,10 @@ namespace BigMarch.Swizzle
 		public static Color Swizzle_110g(this Color v) { return new Color(1, 1, 0, v.g); }
 		public static Color Swizzle_110b(this Color v) { return new Color(1, 1, 0, v.b); }
 		public static Color Swizzle_110a(this Color v) { return new Color(1, 1, 0, v.a); }
-		public static Color Swizzle_1100(this Color v) { return new Color(1, 1, 0, 0); }
-		public static Color Swizzle_1101(this Color v) { return new Color(1, 1, 0, 1); }
 		public static Color Swizzle_111r(this Color v) { return new Color(1, 1, 1, v.r); }
 		public static Color Swizzle_111g(this Color v) { return new Color(1, 1, 1, v.g); }
 		public static Color Swizzle_111b(this Color v) { return new Color(1, 1, 1, v.b); }
 		public static Color Swizzle_111a(this Color v) { return new Color(1, 1, 1, v.a); }
-		public static Color Swizzle_1110(this Color v) { return new Color(1, 1, 1, 0); }
-		public static Color Swizzle_1111(this Color v) { return new Color(1, 1, 1, 1); }
 		public static Color32 Swizzle_rrrr(this Color32 v) { return new Color32(v.r, v.r, v.r, v.r); }
 		public static Color32 Swizzle_rrrg(this Color32 v) { return new Color32(v.r, v.r, v.r, v.g); }
 		public static Color32 Swizzle_rrrb(this Color32 v) { return new Color32(v.r, v.r, v.r, v.b); }
@@ -3777,14 +3733,10 @@ namespace BigMarch.Swizzle
 		public static Color32 Swizzle_000g(this Color32 v) { return new Color32(0, 0, 0, v.g); }
 		public static Color32 Swizzle_000b(this Color32 v) { return new Color32(0, 0, 0, v.b); }
 		public static Color32 Swizzle_000a(this Color32 v) { return new Color32(0, 0, 0, v.a); }
-		public static Color32 Swizzle_0000(this Color32 v) { return new Color32(0, 0, 0, 0); }
-		public static Color32 Swizzle_0001(this Color32 v) { return new Color32(0, 0, 0, 255); }
 		public static Color32 Swizzle_001r(this Color32 v) { return new Color32(0, 0, 255, v.r); }
 		public static Color32 Swizzle_001g(this Color32 v) { return new Color32(0, 0, 255, v.g); }
 		public static Color32 Swizzle_001b(this Color32 v) { return new Color32(0, 0, 255, v.b); }
 		public static Color32 Swizzle_001a(this Color32 v) { return new Color32(0, 0, 255, v.a); }
-		public static Color32 Swizzle_0010(this Color32 v) { return new Color32(0, 0, 255, 0); }
-		public static Color32 Swizzle_0011(this Color32 v) { return new Color32(0, 0, 255, 255); }
 		public static Color32 Swizzle_01rr(this Color32 v) { return new Color32(0, 255, v.r, v.r); }
 		public static Color32 Swizzle_01rg(this Color32 v) { return new Color32(0, 255, v.r, v.g); }
 		public static Color32 Swizzle_01rb(this Color32 v) { return new Color32(0, 255, v.r, v.b); }
@@ -3813,14 +3765,10 @@ namespace BigMarch.Swizzle
 		public static Color32 Swizzle_010g(this Color32 v) { return new Color32(0, 255, 0, v.g); }
 		public static Color32 Swizzle_010b(this Color32 v) { return new Color32(0, 255, 0, v.b); }
 		public static Color32 Swizzle_010a(this Color32 v) { return new Color32(0, 255, 0, v.a); }
-		public static Color32 Swizzle_0100(this Color32 v) { return new Color32(0, 255, 0, 0); }
-		public static Color32 Swizzle_0101(this Color32 v) { return new Color32(0, 255, 0, 255); }
 		public static Color32 Swizzle_011r(this Color32 v) { return new Color32(0, 255, 255, v.r); }
 		public static Color32 Swizzle_011g(this Color32 v) { return new Color32(0, 255, 255, v.g); }
 		public static Color32 Swizzle_011b(this Color32 v) { return new Color32(0, 255, 255, v.b); }
 		public static Color32 Swizzle_011a(this Color32 v) { return new Color32(0, 255, 255, v.a); }
-		public static Color32 Swizzle_0110(this Color32 v) { return new Color32(0, 255, 255, 0); }
-		public static Color32 Swizzle_0111(this Color32 v) { return new Color32(0, 255, 255, 255); }
 		public static Color32 Swizzle_1rrr(this Color32 v) { return new Color32(255, v.r, v.r, v.r); }
 		public static Color32 Swizzle_1rrg(this Color32 v) { return new Color32(255, v.r, v.r, v.g); }
 		public static Color32 Swizzle_1rrb(this Color32 v) { return new Color32(255, v.r, v.r, v.b); }
@@ -3993,14 +3941,10 @@ namespace BigMarch.Swizzle
 		public static Color32 Swizzle_100g(this Color32 v) { return new Color32(255, 0, 0, v.g); }
 		public static Color32 Swizzle_100b(this Color32 v) { return new Color32(255, 0, 0, v.b); }
 		public static Color32 Swizzle_100a(this Color32 v) { return new Color32(255, 0, 0, v.a); }
-		public static Color32 Swizzle_1000(this Color32 v) { return new Color32(255, 0, 0, 0); }
-		public static Color32 Swizzle_1001(this Color32 v) { return new Color32(255, 0, 0, 255); }
 		public static Color32 Swizzle_101r(this Color32 v) { return new Color32(255, 0, 255, v.r); }
 		public static Color32 Swizzle_101g(this Color32 v) { return new Color32(255, 0, 255, v.g); }
 		public static Color32 Swizzle_101b(this Color32 v) { return new Color32(255, 0, 255, v.b); }
 		public static Color32 Swizzle_101a(this Color32 v) { return new Color32(255, 0, 255, v.a); }
-		public static Color32 Swizzle_1010(this Color32 v) { return new Color32(255, 0, 255, 0); }
-		public static Color32 Swizzle_1011(this Color32 v) { return new Color32(255, 0, 255, 255); }
 		public static Color32 Swizzle_11rr(this Color32 v) { return new Color32(255, 255, v.r, v.r); }
 		public static Color32 Swizzle_11rg(this Color32 v) { return new Color32(255, 255, v.r, v.g); }
 		public static Color32 Swizzle_11rb(this Color32 v) { return new Color32(255, 255, v.r, v.b); }
@@ -4029,14 +3973,10 @@ namespace BigMarch.Swizzle
 		public static Color32 Swizzle_110g(this Color32 v) { return new Color32(255, 255, 0, v.g); }
 		public static Color32 Swizzle_110b(this Color32 v) { return new Color32(255, 255, 0, v.b); }
 		public static Color32 Swizzle_110a(this Color32 v) { return new Color32(255, 255, 0, v.a); }
-		public static Color32 Swizzle_1100(this Color32 v) { return new Color32(255, 255, 0, 0); }
-		public static Color32 Swizzle_1101(this Color32 v) { return new Color32(255, 255, 0, 255); }
 		public static Color32 Swizzle_111r(this Color32 v) { return new Color32(255, 255, 255, v.r); }
 		public static Color32 Swizzle_111g(this Color32 v) { return new Color32(255, 255, 255, v.g); }
 		public static Color32 Swizzle_111b(this Color32 v) { return new Color32(255, 255, 255, v.b); }
 		public static Color32 Swizzle_111a(this Color32 v) { return new Color32(255, 255, 255, v.a); }
-		public static Color32 Swizzle_1110(this Color32 v) { return new Color32(255, 255, 255, 0); }
-		public static Color32 Swizzle_1111(this Color32 v) { return new Color32(255, 255, 255, 255); }
 	}
 }
 

@@ -56,6 +56,14 @@ namespace BigMarch.Swizzle
 				{
 					string componentY = components[y];
 
+					//排除掉只有0和1组成的swizzle。
+					bool valid = x < components.Length - 2
+					             || y < components.Length - 2;
+					if (!valid)
+					{
+						continue;
+					}
+
 					string methond = string.Format(
 						"public static {0} Swizzle_{1}{2}(this {0} v)" +
 						"{{return new {0}(v.{1}, v.{2});}}\n",
@@ -89,6 +97,15 @@ namespace BigMarch.Swizzle
 					for (int z = 0; z < components.Length; z++)
 					{
 						string componentZ = components[z];
+
+						//排除掉只有0和1组成的swizzle。
+						bool valid = x < components.Length - 2
+						             || y < components.Length - 2
+						             || z < components.Length - 2;
+						if (!valid)
+						{
+							continue;
+						}
 
 						string methond = string.Format(
 							"public static {0} Swizzle_{1}{2}{3}(this {0} v)" +
@@ -129,6 +146,16 @@ namespace BigMarch.Swizzle
 						for (int w = 0; w < components.Length; w++)
 						{
 							string componentW = components[w];
+
+							//排除掉只有0和1组成的swizzle。
+							bool valid = x < components.Length - 2
+							             || y < components.Length - 2
+							             || z < components.Length - 2
+							             || w < components.Length - 2;
+							if (!valid)
+							{
+								continue;
+							}
 
 							string methond = string.Format(
 								"public static {0} Swizzle_{1}{2}{3}{4}(this {0} v)" +
@@ -172,6 +199,16 @@ namespace BigMarch.Swizzle
 						{
 							string componentW = components[w];
 
+							//排除掉只有0和1组成的swizzle。
+							bool valid = x < components.Length - 2
+										 || y < components.Length - 2
+										 || z < components.Length - 2
+										 || w < components.Length - 2;
+							if (!valid)
+							{
+								continue;
+							}
+
 							string methond = string.Format(
 								"public static {0} Swizzle_{1}{2}{3}{4}(this {0} v)" +
 								"{{return new {0}(v.{1}, v.{2}, v.{3}, v.{4});}}\n",
@@ -212,6 +249,16 @@ namespace BigMarch.Swizzle
 						for (int w = 0; w < components.Length; w++)
 						{
 							string componentW = components[w];
+
+							//排除掉只有0和1组成的swizzle。
+							bool valid = x < components.Length - 2
+										 || y < components.Length - 2
+										 || z < components.Length - 2
+										 || w < components.Length - 2;
+							if (!valid)
+							{
+								continue;
+							}
 
 							string methond = string.Format(
 								"public static {0} Swizzle_{1}{2}{3}{4}(this {0} v)" +
