@@ -57,7 +57,7 @@ namespace BigMarch.Swizzle
 					string componentY = components[y];
 
 					string methond = string.Format(
-						"public static {0} Swizzle{1}{2}(this {0} v)" +
+						"public static {0} Swizzle_{1}{2}(this {0} v)" +
 						"{{return new {0}(v.{1}, v.{2});}}\n",
 						"Vector2",
 						componentX,
@@ -91,7 +91,7 @@ namespace BigMarch.Swizzle
 						string componentZ = components[z];
 
 						string methond = string.Format(
-							"public static {0} Swizzle{1}{2}{3}(this {0} v)" +
+							"public static {0} Swizzle_{1}{2}{3}(this {0} v)" +
 							"{{return new {0}(v.{1}, v.{2}, v.{3});}}\n",
 							"Vector3",
 							componentX,
@@ -131,7 +131,7 @@ namespace BigMarch.Swizzle
 							string componentW = components[w];
 
 							string methond = string.Format(
-								"public static {0} Swizzle{1}{2}{3}{4}(this {0} v)" +
+								"public static {0} Swizzle_{1}{2}{3}{4}(this {0} v)" +
 								"{{return new {0}(v.{1}, v.{2}, v.{3}, v.{4});}}\n",
 								"Vector4",
 								componentX,
@@ -173,7 +173,7 @@ namespace BigMarch.Swizzle
 							string componentW = components[w];
 
 							string methond = string.Format(
-								"public static {0} Swizzle{1}{2}{3}{4}(this {0} v)" +
+								"public static {0} Swizzle_{1}{2}{3}{4}(this {0} v)" +
 								"{{return new {0}(v.{1}, v.{2}, v.{3}, v.{4});}}\n",
 								"Color",
 								componentX,
@@ -214,7 +214,7 @@ namespace BigMarch.Swizzle
 							string componentW = components[w];
 
 							string methond = string.Format(
-								"public static {0} Swizzle{1}{2}{3}{4}(this {0} v)" +
+								"public static {0} Swizzle_{1}{2}{3}{4}(this {0} v)" +
 								"{{return new {0}(v.{1}, v.{2}, v.{3}, v.{4});}}\n",
 								"Color32",
 								componentX,
