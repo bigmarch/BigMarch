@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -25,6 +26,8 @@ namespace BigMarch.UIDissolve
 			{
 				return;
 			}
+			
+			#if UNITY_5_6_OR_NEWER
 			bool uv1Enable = (graphic.canvas.additionalShaderChannels & AdditionalCanvasShaderChannels.TexCoord1) != 0;
 			Assert.IsTrue(uv1Enable, "Need Canvas config texcoord1");
 
@@ -57,6 +60,9 @@ namespace BigMarch.UIDissolve
 			{
 				vh.SetUIVertex(_uiVertexList[i], i);
 			}
+			#else
+			throw new Exception("THIS FEATURE NEED UNITY5.6+");
+			#endif
 		}
 
 		protected override void OnEnable()
