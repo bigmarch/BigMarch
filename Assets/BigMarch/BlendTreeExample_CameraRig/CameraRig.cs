@@ -39,9 +39,9 @@ public class CameraRig : MonoBehaviour
 	void Update()
 	{
 		// 1，设置各个blend node中的weight
-		_root.CurrentWeight = Weight_Root;
-		_fix.CurrentWeight = Weight_Fix;
-		_normalPositions.CurrentWeight = Weight_NormalPositions;
+		_root.BlendParameter = Weight_Root;
+		_fix.BlendParameter = Weight_Fix;
+		_normalPositions.BlendParameter = Weight_NormalPositions;
 
 		// 2，从tree获得result。
 		CameraRigBlendData data = BlendTree.GetResult() as CameraRigBlendData;

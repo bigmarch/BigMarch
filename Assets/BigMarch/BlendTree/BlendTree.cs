@@ -111,7 +111,7 @@ namespace BigMarch.BlendTree
 					Assert.IsTrue(bn.UpstreamList.Count > 0, errorLog);
 
 					// CurrentWeight在0~1之间。
-					Assert.IsTrue(bn.CurrentWeight >= 0 && bn.CurrentWeight <= 1, errorLog);
+					Assert.IsTrue(bn.BlendParameter >= 0 && bn.BlendParameter <= 1, errorLog);
 
 					// Upstream最后一个元素不能超过1，第一个元素不能小于0
 					Assert.AreEqual(0, bn.UpstreamList[0].Threshold, bn.name);

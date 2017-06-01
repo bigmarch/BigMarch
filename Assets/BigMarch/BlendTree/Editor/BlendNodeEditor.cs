@@ -35,7 +35,7 @@ public class BlendNodeEditor : Editor
 
 		for (int i = 0; i < node.UpstreamList.Count; i++)
 		{
-			float w = node.CurrentWeight;
+			float w = node.BlendParameter;
 			if (Mathf.Abs(w - node.UpstreamList[i].Threshold) < 0.01f)
 				return string.Format(BLEND_RESULT_PRECISE_TXT,node.UpstreamList[i].Node.name);
 			else if (i < node.UpstreamList.Count - 1 
@@ -92,9 +92,9 @@ public class BlendNodeEditor : Editor
 					}
 				}
 
-				c = Color.LerpUnclamped(START_COLOR, END_COLOR, node.CurrentWeight);
+				c = Color.LerpUnclamped(START_COLOR, END_COLOR, node.BlendParameter);
 
-				EditorGUI.DrawRect(new Rect(r.x + node.CurrentWeight*r.width, r.y, 2, r.height), c);
+				EditorGUI.DrawRect(new Rect(r.x + node.BlendParameter*r.width, r.y, 2, r.height), c);
 			}
 
 		}

@@ -16,7 +16,7 @@ namespace BigMarch.BlendTree
 
 
 		[Range(0, 1)]
-		public float CurrentWeight = 0.5f;
+		public float BlendParameter = 0.5f;
 
 		public List<Pair> UpstreamList;
 
@@ -43,10 +43,10 @@ namespace BigMarch.BlendTree
 				Pair currentPair = UpstreamList[i];
 				Pair nextPair = UpstreamList[i + 1];
 
-				if (CurrentWeight >= currentPair.Threshold && CurrentWeight < nextPair.Threshold)
+				if (BlendParameter >= currentPair.Threshold && BlendParameter < nextPair.Threshold)
 				{
 					// lerp在 0~1之间。
-					float lerp = (CurrentWeight - currentPair.Threshold) /
+					float lerp = (BlendParameter - currentPair.Threshold) /
 					             (nextPair.Threshold - currentPair.Threshold);
 
 					BlendData currentBlendData = currentPair.Node.GetResult();
@@ -59,7 +59,7 @@ namespace BigMarch.BlendTree
 					return _cached;
 				}
 			}
-			throw new Exception(string.Format("can not get blend data, current weight{0}", CurrentWeight));
+			throw new Exception(string.Format("can not get blend data, current weight{0}", BlendParameter));
 		}
 
 		// 根据hierarchy总的层级关系，递归的初始化所有的节点。
