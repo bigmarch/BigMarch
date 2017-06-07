@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace BigMarch.Tool
 {
-	public static class Utility
+	public static class Tool
 	{
 		public static void GetPointOnEllipse(out float x, out float y, float rightRadiusInRadian, float forwardRadiusInRadian,
 			float angle)
