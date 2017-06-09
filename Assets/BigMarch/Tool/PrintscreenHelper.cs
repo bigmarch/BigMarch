@@ -9,37 +9,35 @@ namespace BigMarch.Tool
 	{
 		public int Width = 1920;
 		public int Height = 1080;
-		public string PngName = "NewPng";
+		public string FileName = "NewPng";
 
-		[ContextMenu("Take Photo")]
-		public void ContextMenu_TakePhoto()
+		public void Printscreen(string path, int width, int height)
 		{
 			Camera c = GetComponent<Camera>();
-			RenderTexture rt = new RenderTexture(Width, Height, 32);
+			RenderTexture rt = new RenderTexture(width, height, 32);
 			c.targetTexture = rt;
 			c.Render();
-			SaveRenderTextureToPNG(rt, PngName);
+			SaveRenderTextureToPNG(rt, path);
 			rt.Release();
 			c.targetTexture = null;
 		}
 
 		//将RenderTexture保存成一张png图片  
-		private static void SaveRenderTextureToPNG(RenderTexture rt, string pngName)
+		private static void SaveRenderTextureToPNG(RenderTexture rt, string path)
 		{
-			string savePath = Path.GetDirectoryName(Application.dataPath) + "/" + pngName + ".png";
 			RenderTexture prev = RenderTexture.active;
 			RenderTexture.active = rt;
 			Texture2D png = new Texture2D(rt.width, rt.height, TextureFormat.ARGB32, false);
 			png.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
 			byte[] bytes = png.EncodeToPNG();
-			FileStream file = File.Open(savePath, FileMode.Create);
+			FileStream file = File.Open(path, FileMode.Create);
 			BinaryWriter writer = new BinaryWriter(file);
 			writer.Write(bytes);
 			file.Close();
 			DestroyImmediate(png);
 			RenderTexture.active = prev;
 
-			Debug.Log("Save to : " + savePath);
+			Debug.Log("printscreen save to : " + path);
 		}
 	}
 }
