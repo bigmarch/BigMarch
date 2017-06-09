@@ -1,5 +1,6 @@
 // Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
-
+// 注意，使用这个shader时，如果背景片儿还是receive shadow的话，那么会导致阴影很重，并且阴影强度无法调控。
+// 所以要保证，fake shadow 透明片之后的物体，都关掉receive shadow。
 Shader "Custom/FakeShadowForAR" {
     Properties {
 		_ShadowStrength("Shadow Strength", Range(0, 1)) = 1  
