@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace BigMarch.Tool
 {
+	[RequireComponent(typeof(Camera))]
 	public class PrintscreenHelper : MonoBehaviour
 	{
 		public int Width = 1920;
