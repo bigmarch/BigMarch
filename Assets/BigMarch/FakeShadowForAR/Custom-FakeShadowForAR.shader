@@ -1,6 +1,6 @@
-// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
-// ×¢Òâ£¬Ê¹ÓÃÕâ¸öshaderÊ±£¬Èç¹û±³¾°Æ¬¶ù»¹ÊÇreceive shadowµÄ»°£¬ÄÇÃ´»áµ¼ÖÂÒõÓ°ºÜÖØ£¬²¢ÇÒÒõÓ°Ç¿¶ÈÎŞ·¨µ÷¿Ø¡£
-// ËùÒÔÒª±£Ö¤£¬fake shadow Í¸Ã÷Æ¬Ö®ºóµÄÎïÌå£¬¶¼¹Øµôreceive shadow¡£
+ï»¿// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+// æ³¨æ„ï¼Œä½¿ç”¨è¿™ä¸ªshaderæ—¶ï¼Œå¦‚æœèƒŒæ™¯ç‰‡å„¿è¿˜æ˜¯receive shadowçš„è¯ï¼Œé‚£ä¹ˆä¼šå¯¼è‡´é˜´å½±å¾ˆé‡ï¼Œå¹¶ä¸”é˜´å½±å¼ºåº¦æ— æ³•è°ƒæ§ã€‚
+// æ‰€ä»¥è¦ä¿è¯ï¼Œfake shadow é€æ˜ç‰‡ä¹‹åçš„ç‰©ä½“ï¼Œéƒ½å…³æ‰receive shadowã€‚
 Shader "Custom/FakeShadowForAR" {
     Properties {
 		_ShadowStrength("Shadow Strength", Range(0, 1)) = 1  
