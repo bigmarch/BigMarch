@@ -1,0 +1,60 @@
+
+//global int $frame = 0 ;
+
+global proc myTest() 
+{ 
+   if(`window -ex myTestWin`)
+   { 
+     deleteUI myTestWin; 
+   }
+  $frame = 0;
+
+window -t "模型序列复制工具" myTestWin; 
+
+columnLayout -adj 1; // 主布局 
+// 和控制窗口一样，要想控制控件，也要给控件一个唯一的命名。 
+// 这里文本框(textField)控件的名字为"myConeNameFld" 
+
+//frameLayout -label "序列前缀名" -labelAlign "center" -borderStyle "etchedIn" -w 300;
+//textField -tx "box_" save; 
+
+frameLayout -label "动画帧数" -labelAlign "center" -borderStyle "etchedIn" -w 200; 
+//columnLayout;
+text -l"开始帧";
+intField -v 1 StartFrame; 
+text -l "结束帧";
+intField -v 24 EndFrame ; 
+
+frameLayout -label "选择模型后点击按钮" -labelAlign "center" -borderStyle "etchedIn" -w 200; 
+button -l "复制序列" -c "CopyModel" -h 50 -w 10; //分号中填写要执行的函数
+frameLayout -label "" -labelAlign "center" -borderStyle "etchedIn" -w 100 -h 50; 
+text -l "by yzx"; 
+showWindow myTestWin; 
+} 
+
+myTest;
+
+//执行函数
+global proc CopyModel() 
+{ 
+int $starFram = `intField -q -v StartFrame`;//转换获取到数值传给starfram变量
+int $endFrame = `intField -q -v EndFrame`;
+print $starFram;       //复制序列按钮
+
+string $select[] = `ls -sl`;//获取选择的元素放入数组中
+string $selectMesh = $select[0]; 
+
+for($i = $starFram; $i< $endFrame ; $i++) 
+{
+   currentTime $i; //修改时间线
+    select -r $selectMesh;
+    duplicate -rr;//复制
+    
+  // $frame1 = $i;
+    print $i;
+    print "帧";
+    print "\n";
+};
+
+}
+
