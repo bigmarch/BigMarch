@@ -17,7 +17,7 @@ namespace BigMarch.Tool
 		[MenuItem("BigMarch/SaveAsPng")]
 		static void Init()
 		{
-			SaveAsPng window = (SaveAsPng) GetWindow(typeof(SaveAsPng));
+			SaveAsPng window = (SaveAsPng)GetWindow(typeof(SaveAsPng));
 			window.Show();
 		}
 
@@ -75,29 +75,31 @@ namespace BigMarch.Tool
 					TextureImporter importer = AssetImporter.GetAtPath(path) as TextureImporter;
 					bool isReadable = importer.isReadable;
 
+					// 缓存format，然后临时改成不压缩，用于导出png。
 #if UNITY_5_6_OR_NEWER
 					TextureImporterCompression textureCompression = importer.textureCompression;
+					importer.textureCompression = TextureImporterCompression.Uncompressed;
 #else
 					TextureImporterFormat format = importer.textureFormat;
+					importer.textureFormat = TextureImporterFormat.RGBA32;
 #endif
 
 					importer.isReadable = true;
-#if UNITY_5_6_OR_NEWER
-					importer.textureCompression = TextureImporterCompression.Uncompressed;
-#else
-					importer.textureFormat = TextureImporterFormat.RGBA32;
-#endif
+
 					importer.SaveAndReimport();
 
 					byte[] bytes = t.EncodeToPNG();
 					File.WriteAllBytes(Path.Combine(saveFolderPath, t.name + ".png"), bytes);
 
-					importer.isReadable = isReadable;
+
+					// 复位format
 #if UNITY_5_6_OR_NEWER
 					importer.textureCompression = textureCompression;
 #else
 					importer.textureFormat = format;
 #endif
+					importer.isReadable = isReadable;
+
 					importer.SaveAndReimport();
 				}
 			}
