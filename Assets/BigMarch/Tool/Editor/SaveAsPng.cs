@@ -76,6 +76,8 @@ namespace BigMarch.Tool
 
 			for (int i = 0; i < _cachedSelection.Length; i++)
 			{
+				EditorUtility.DisplayProgressBar("", "Save as png", i * 1f / _cachedSelection.Length);
+
 				Texture2D t = _cachedSelection[i] as Texture2D;
 				if (t)
 				{
@@ -111,6 +113,7 @@ namespace BigMarch.Tool
 					importer.SaveAndReimport();
 				}
 			}
+			EditorUtility.ClearProgressBar();
 		}
 	}
 }
