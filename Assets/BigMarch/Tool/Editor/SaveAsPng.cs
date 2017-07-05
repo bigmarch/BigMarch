@@ -12,6 +12,8 @@ namespace BigMarch.Tool
 	public class SaveAsPng : EditorWindow
 	{
 		private Vector2 _scroll;
+		private bool _lock;
+		private Object[] _cachedSelection;
 
 		// Add menu named "My Window" to the Window menu
 		[MenuItem("BigMarch/SaveAsPng")]
@@ -23,31 +25,39 @@ namespace BigMarch.Tool
 
 		private void OnGUI()
 		{
+			_lock = EditorGUILayout.Toggle("Lock", _lock);
+
 			if (GUILayout.Button("SaveAs"))
 			{
 				Save();
 			}
 
-			Object[] all = Selection.objects;
-
-			_scroll = EditorGUILayout.BeginScrollView(_scroll);
-			for (int i = 0; i < all.Length; i++)
+			if (!_lock)
 			{
-				Texture t = all[i] as Texture;
-				if (t)
-				{
-					GUILayout.BeginHorizontal();
-					EditorGUILayout.ObjectField(t, typeof(Texture), false);
-					string path = AssetDatabase.GetAssetPath(t);
-
-					TextureImporter importer = AssetImporter.GetAtPath(path) as TextureImporter;
-					GUILayout.Box(importer.maxTextureSize.ToString());
-
-					GUILayout.Label(path);
-					GUILayout.EndHorizontal();
-				}
+				_cachedSelection = Selection.objects;
 			}
-			EditorGUILayout.EndScrollView();
+
+			if (_cachedSelection != null)
+			{
+				_scroll = EditorGUILayout.BeginScrollView(_scroll);
+				for (int i = 0; i < _cachedSelection.Length; i++)
+				{
+					Texture t = _cachedSelection[i] as Texture;
+					if (t)
+					{
+						GUILayout.BeginHorizontal();
+						EditorGUILayout.ObjectField(t, typeof(Texture), false);
+						string path = AssetDatabase.GetAssetPath(t);
+
+						TextureImporter importer = AssetImporter.GetAtPath(path) as TextureImporter;
+						GUILayout.Box(importer.maxTextureSize.ToString());
+
+						GUILayout.Label(path);
+						GUILayout.EndHorizontal();
+					}
+				}
+				EditorGUILayout.EndScrollView();
+			}
 		}
 
 		private void OnSelectionChange()
