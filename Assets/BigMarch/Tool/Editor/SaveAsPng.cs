@@ -74,11 +74,9 @@ namespace BigMarch.Tool
 				return;
 			}
 
-			Object[] all = Selection.objects;
-
-			for (int i = 0; i < all.Length; i++)
+			for (int i = 0; i < _cachedSelection.Length; i++)
 			{
-				Texture2D t = all[i] as Texture2D;
+				Texture2D t = _cachedSelection[i] as Texture2D;
 				if (t)
 				{
 					string path = AssetDatabase.GetAssetPath(t);
