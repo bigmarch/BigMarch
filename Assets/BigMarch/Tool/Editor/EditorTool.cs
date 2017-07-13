@@ -28,7 +28,7 @@ namespace BigMarch.Tool
 				{
 					string path = AssetDatabase.GetAssetPath(o);
 
-					Debug.Log("Target: " + path);
+					Debug.Log("_target: " + path);
 					string[] result = AssetDatabase.GetDependencies(path, true);
 
 					string log = "";

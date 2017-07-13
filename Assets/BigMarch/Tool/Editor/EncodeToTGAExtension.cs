@@ -33,12 +33,14 @@ public static class EncodeToTGAExtension
     public static byte[] EncodeToTGA(this Texture2D _texture2D)
     {
         const int iTgaHeaderSize = 18;
-        const int iBytesPerPixelRGB24 = 3; // 1 byte per channel (rgb)
-        const int iBytesPerPixelARGB32 = 4; // ~ (rgba)
+	    const int iBytesPerPixelRGB24 = 3; // 1 byte per channel (rgb)
+	    const int iBytesPerPixelARGB32 = 4; // ~ (rgba)
 
-        int iBytesPerPixel = _texture2D.format == TextureFormat.ARGB32 ? iBytesPerPixelARGB32 : iBytesPerPixelRGB24;
+	    int iBytesPerPixel = (_texture2D.format == TextureFormat.ARGB32 || _texture2D.format == TextureFormat.RGBA32)
+		    ? iBytesPerPixelARGB32
+		    : iBytesPerPixelRGB24;
 
-        //
+	    //
 
         using (MemoryStream memoryStream = new MemoryStream(iTgaHeaderSize + _texture2D.width * _texture2D.height * iBytesPerPixel))
         {
@@ -99,26 +101,28 @@ public static class EncodeToTGAExtension
                             // Add RLE-Bit to PacketLength
                             binaryWriter.Write((byte)((iPacketLength - 1) | (1 << 7)));
 
-                            binaryWriter.Write(c32PreviousPixel.b);
-                            binaryWriter.Write(c32PreviousPixel.g);
-                            binaryWriter.Write(c32PreviousPixel.r);
+		                    binaryWriter.Write(c32PreviousPixel.b);
+		                    binaryWriter.Write(c32PreviousPixel.g);
+		                    binaryWriter.Write(c32PreviousPixel.r);
 
-                            if (_texture2D.format == TextureFormat.ARGB32)
-                                binaryWriter.Write(c32PreviousPixel.a);
+		                    if (_texture2D.format == TextureFormat.ARGB32
+		                        || _texture2D.format == TextureFormat.RGBA32)
+			                    binaryWriter.Write(c32PreviousPixel.a);
 
-                            break;
-                        case RLEPacketType.RAW:
+		                    break;
+	                    case RLEPacketType.RAW:
 
-                            binaryWriter.Write((byte)(iPacketLength - 1));
+		                    binaryWriter.Write((byte) (iPacketLength - 1));
 
-                            for (int iPacketPosition = iPacketStart; iPacketPosition < iPacketEnd; ++iPacketPosition)
-                            {
-                                binaryWriter.Write(arPixels[iPacketPosition].b);
-                                binaryWriter.Write(arPixels[iPacketPosition].g);
-                                binaryWriter.Write(arPixels[iPacketPosition].r);
+		                    for (int iPacketPosition = iPacketStart; iPacketPosition < iPacketEnd; ++iPacketPosition)
+		                    {
+			                    binaryWriter.Write(arPixels[iPacketPosition].b);
+			                    binaryWriter.Write(arPixels[iPacketPosition].g);
+			                    binaryWriter.Write(arPixels[iPacketPosition].r);
 
-                                if (_texture2D.format == TextureFormat.ARGB32)
-                                    binaryWriter.Write(arPixels[iPacketPosition].a);
+			                    if (_texture2D.format == TextureFormat.ARGB32
+			                        || _texture2D.format == TextureFormat.RGBA32)
+				                    binaryWriter.Write(arPixels[iPacketPosition].a);
                             }
 
                             break;

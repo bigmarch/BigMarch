@@ -13,6 +13,7 @@ namespace BigMarch.Tool
 	{
 		private Vector2 _scroll;
 		private bool _lock;
+		private bool _forceSquare;
 		private Object[] _cachedSelection;
 
 		// Add menu named "My Window" to the Window menu
@@ -26,6 +27,7 @@ namespace BigMarch.Tool
 		private void OnGUI()
 		{
 			_lock = EditorGUILayout.Toggle("Lock", _lock);
+			_forceSquare = EditorGUILayout.Toggle("Force Square", _forceSquare);
 
 			if (GUILayout.Button("SaveAs"))
 			{
@@ -46,6 +48,10 @@ namespace BigMarch.Tool
 					if (t)
 					{
 						GUILayout.BeginHorizontal();
+						if (GUILayout.Button("S", GUILayout.Width(25)))
+						{
+							Selection.activeObject = t;
+						}
 						EditorGUILayout.ObjectField(t, typeof(Texture), false);
 						string path = AssetDatabase.GetAssetPath(t);
 
@@ -98,7 +104,21 @@ namespace BigMarch.Tool
 
 					importer.SaveAndReimport();
 
-					byte[] bytes = t.EncodeToPNG();
+					byte[] bytes;
+					if (_forceSquare)
+					{
+						int max = Mathf.Max(t.height, t.width);
+
+						Texture2D square = Instantiate(t);
+						//square.Resize(max, max, TextureFormat.RGBA32, false);
+						TextureScale.Bilinear(square, max, max);
+						bytes = square.EncodeToPNG();
+						DestroyImmediate(square);
+					}
+					else
+					{
+						bytes = t.EncodeToPNG();
+					}
 					File.WriteAllBytes(Path.Combine(saveFolderPath, t.name + ".png"), bytes);
 
 
@@ -117,3 +137,9 @@ namespace BigMarch.Tool
 		}
 	}
 }
+
+
+
+
+
+
