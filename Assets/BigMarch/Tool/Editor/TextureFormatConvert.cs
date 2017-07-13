@@ -42,8 +42,17 @@ namespace BigMarch.Tool
 
 		private void SaveByte(byte[] bytes, string defaultFileName)
 		{
-			string saveFolderPath = EditorUtility.SaveFolderPanel("SaveFolder", Application.dataPath.Replace("Assets", ""), "");
-			File.WriteAllBytes(Path.Combine(saveFolderPath, defaultFileName), bytes);
+			string extension = Path.GetExtension(defaultFileName);
+			string saveFolderPath = EditorUtility.SaveFilePanel(
+				"SaveFolder",
+				Application.dataPath.Replace("Assets", ""),
+				"new" + extension,
+				extension);
+
+			if (!string.IsNullOrEmpty(saveFolderPath))
+			{
+				File.WriteAllBytes(saveFolderPath, bytes);
+			}
 		}
 	}
 }
