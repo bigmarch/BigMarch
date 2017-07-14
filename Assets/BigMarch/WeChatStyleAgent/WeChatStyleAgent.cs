@@ -225,7 +225,7 @@ public class WeChatStyleAgent : MonoBehaviour
 		}
 		if (!string.IsNullOrEmpty(entity.GotExceptionMessage()))
 		{
-			Debug.Log(entity.GotExceptionMessage());
+			Debug.LogError(entity.GotExceptionMessage());
 		}
 
 		container.Value = entity.GetOuputData();

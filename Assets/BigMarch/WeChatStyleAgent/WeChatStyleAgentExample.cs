@@ -1,16 +1,24 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using UnityEngine;
 
 public class WeChatStyleAgentExample : MonoBehaviour
 {
+	private List<string> _cachedUrlList;
+
+	void Awake()
+	{
+		_cachedUrlList = new List<string>();
+	}
+
 	// Use this for initialization
 	void Start()
 	{
 		string local = Application.dataPath.Replace("Assets", "WeChatStyleCachedFolder");
 		string server = Application.dataPath.Replace("Assets", "WeChatStyleTempServer");
-		Func<string> createFileName = () => "temp.tmp";
+		Func<string> createFileName = () => Time.time.ToString(CultureInfo.InvariantCulture);
 		WeChatStyleAgent.Instance.Init(local, server, createFileName);
 	}
 
@@ -18,8 +26,6 @@ public class WeChatStyleAgentExample : MonoBehaviour
 	void Update()
 	{
 	}
-
-	private string _cachedUrl;
 
 	void OnGUI()
 	{
@@ -55,16 +61,15 @@ public class WeChatStyleAgentExample : MonoBehaviour
 				{
 					WeChatStyleAgent.Instance.CompressAndUpload(s =>
 					{
-						_cachedUrl = s;
-						Debug.Log(s);
+						_cachedUrlList.Add(s);
 					});
 				}
 
-				if (!string.IsNullOrEmpty(_cachedUrl))
+				foreach (var url in _cachedUrlList)
 				{
-					if (GUI.Button(r2, "Download Decompress Play: " + _cachedUrl))
+					if (GUILayout.Button(url))
 					{
-						WeChatStyleAgent.Instance.DownloadAndDecompressAndPlay(_cachedUrl, () => { Debug.Log("Play!"); });
+						WeChatStyleAgent.Instance.DownloadAndDecompressAndPlay(url, () => { });
 					}
 				}
 			}

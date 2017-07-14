@@ -25,17 +25,26 @@ public class WeChatStyleServer : MonoBehaviour
 
 		File.WriteAllBytes(localPath, data);
 
-		// upload
-		//		WWWForm wwwF = new WWWForm();
-		//		wwwF.AddBinaryData("", data);
-		//		WWW www = new WWW("", wwwF);
-		//		yield return www;
-		//		container.Value = www.text;
+		bool serverIsWAN = ServerUrl.StartsWith("http://")
+		                   || ServerUrl.StartsWith("https://")
+		                   || ServerUrl.StartsWith("ftp://");
 
-		// 临时把本地磁盘当服务器
-		File.WriteAllBytes(serverPath, data);
-
-		container.Value = "file://" + serverPath;
+		if (serverIsWAN)
+		{
+			// upload
+			//		WWWForm wwwF = new WWWForm();
+			//		wwwF.AddBinaryData("", data);
+			//		WWW www = new WWW("", wwwF);
+			//		yield return www;
+			//		container.Value = www.text;
+			container.Value = serverPath;
+		}
+		else
+		{
+			// 临时把本地磁盘当服务器
+			File.WriteAllBytes(serverPath, data);
+			container.Value = "file://" + serverPath;
+		}
 		yield break;
 	}
 
