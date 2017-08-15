@@ -46,7 +46,7 @@ namespace BigMarch.Tool
 			string saveFolderPath = EditorUtility.SaveFilePanel(
 				"SaveFolder",
 				Application.dataPath.Replace("Assets", ""),
-				"new" + extension,
+				defaultFileName,
 				extension);
 
 			if (!string.IsNullOrEmpty(saveFolderPath))
