@@ -4,6 +4,7 @@ Shader "!Debug/UV 1" {
 SubShader {
     Pass {
         Fog { Mode Off }
+		Cull Off
 CGPROGRAM
 #pragma vertex vert
 #pragma fragment frag
