@@ -20,14 +20,14 @@ public class AimSightWorld2Screen : MonoBehaviour
 	// Update is called once per frame
 	void Update()
 	{
-		float sideLength = CaculateAimSightSize(_camera, Shooter.position, Shooter.forward, ScatterAngle);
+		float sideLength = CaculateAimSightSize(_camera, Shooter.position, ScatterAngle);
 		AimSightHud.rectTransform.sizeDelta = new Vector2(sideLength, sideLength);
 	}
 
-	private static float CaculateAimSightSize(Camera camera, Vector3 origin, Vector3 direction, float scatterAngle)
+	private static float CaculateAimSightSize(Camera camera, Vector3 origin, float scatterAngle)
 	{
-		Vector3 left = Quaternion.AngleAxis(scatterAngle, Vector3.up) * direction;
-		Vector3 right = Quaternion.AngleAxis(-scatterAngle, Vector3.up) * direction;
+		Vector3 left = Quaternion.AngleAxis(scatterAngle, Vector3.up) * camera.transform.forward;
+		Vector3 right = Quaternion.AngleAxis(-scatterAngle, Vector3.up) * camera.transform.forward;
 
 		Vector3 farPointLeft = origin + left * camera.farClipPlane;
 		Vector3 farPointRight = origin + right * camera.farClipPlane;
