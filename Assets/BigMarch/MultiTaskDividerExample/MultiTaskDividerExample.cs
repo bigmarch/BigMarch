@@ -9,6 +9,7 @@ public class MultiTaskDividerExample : MonoBehaviour
 	public Transform[] RayCastPointArr;
 
 	private MultiTaskDivider _multiTaskDivider = new MultiTaskDivider();
+	private Dictionary<string, bool> _castResultDic = new Dictionary<string, bool>();
 
 	// Update is called once per frame
 	void Update()
@@ -64,5 +65,9 @@ public class MultiTaskDividerExample : MonoBehaviour
 	{
 		Debug.DrawLine(t0.position, t1.position, Color.yellow);
 		Debug.Log("Draw line " + t0.name + " " + t1.name);
+
+		bool cast = Physics.Linecast(t0.position, t1.position);
+		string key = t0.name + " " + t1.name;
+		_castResultDic[key] = cast;
 	}
 }
