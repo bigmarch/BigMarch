@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Profiling;
 
 [ExecuteInEditMode]
 [RequireComponent(typeof(MeshFilter))]
@@ -71,14 +72,22 @@ public class OoSimpleDecal : MonoBehaviour
 		_decalMeshBuilder.Clear();
 		for (int i = 0; i < TargetObjects.Length; i++)
 		{
-			MeshFilter mf = TargetObjects[i].GetComponent<MeshFilter>();
-			if (mf)
+			if (TargetObjects[i])
 			{
-				_decalMeshBuilder.Build(transform, mf, MaxClipAngle);
+				MeshFilter mf = TargetObjects[i].GetComponent<MeshFilter>();
+				if (mf)
+				{
+					Profiler.BeginSample("Build");
+					_decalMeshBuilder.Build(transform, mf, MaxClipAngle);
+					Profiler.EndSample();
+				}
 			}
 		}
 		_decalMeshBuilder.Push(PushDistance);
+
+		Profiler.BeginSample("FillToMeshAndClear");
 		_decalMeshBuilder.FillToMeshAndClear(_meshFilter.sharedMesh);
+		Profiler.EndSample();
 	}
 
 	void OnDrawGizmosSelected()

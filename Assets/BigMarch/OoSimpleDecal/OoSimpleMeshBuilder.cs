@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Profiling;
 
 public class OoSimpleDecalMeshBuilder
 {
@@ -16,6 +17,9 @@ public class OoSimpleDecalMeshBuilder
 	//		_indices.Clear();
 	//	}
 
+	private List<Vector3> _vertList = new List<Vector3>();
+	private List<int> _triangleList = new List<int>();
+
 	// builder 是一个 mesh 数据的容器。
 	public void Build(
 		Transform decalTransform,
@@ -25,23 +29,34 @@ public class OoSimpleDecalMeshBuilder
 		Matrix4x4 objToDecalMatrix = decalTransform.worldToLocalMatrix * targetMeshFilter.transform.localToWorldMatrix;
 
 		Mesh mesh = targetMeshFilter.sharedMesh;
-		Vector3[] vertices = mesh.vertices;
-		int[] triangles = mesh.triangles;
 
-		for (int i = 0; i < triangles.Length; i += 3)
+//		Profiler.BeginSample("Mesh");
+
+		_vertList.Clear();
+		_triangleList.Clear();
+		mesh.GetVertices(_vertList);
+		mesh.GetTriangles(_triangleList, 0);
+
+//		Profiler.EndSample();
+
+//		Profiler.BeginSample("Add");
+
+		for (int i = 0; i < _triangleList.Count; i += 3)
 		{
-			int i1 = triangles[i];
-			int i2 = triangles[i + 1];
-			int i3 = triangles[i + 2];
+			int i1 = _triangleList[i];
+			int i2 = _triangleList[i + 1];
+			int i3 = _triangleList[i + 2];
 
 			// 把 target mesh 中的点转换到 decal 的本地空间。
-			Vector3 v1 = objToDecalMatrix.MultiplyPoint(vertices[i1]);
-			Vector3 v2 = objToDecalMatrix.MultiplyPoint(vertices[i2]);
-			Vector3 v3 = objToDecalMatrix.MultiplyPoint(vertices[i3]);
+			Vector3 v1 = objToDecalMatrix.MultiplyPoint(_vertList[i1]);
+			Vector3 v2 = objToDecalMatrix.MultiplyPoint(_vertList[i2]);
+			Vector3 v3 = objToDecalMatrix.MultiplyPoint(_vertList[i3]);
 
 			// 把三个点加到 builder 中。
 			AddTriangle(v1, v2, v3, maxClipAngle);
 		}
+
+//		Profiler.EndSample();
 	}
 
 	private void AddTriangle(Vector3 v1, Vector3 v2, Vector3 v3, float maxClipAngle)
@@ -52,19 +67,19 @@ public class OoSimpleDecalMeshBuilder
 
 		if (Vector3.Angle(Vector3.forward, -normal) <= maxClipAngle)
 		{
-			var poly = OoSimpleDecalUtility.Clip(v1, v2, v3);
-			if (poly.Length > 0)
+			List<Vector3> poly = OoSimpleDecalUtility.Clip(v1, v2, v3);
+			if (poly.Count > 0)
 			{
 				AddPolygon(poly, normal, uvRect);
 			}
 		}
 	}
 
-	private void AddPolygon(Vector3[] poly, Vector3 normal, Rect uvRect)
+	private void AddPolygon(List<Vector3> poly, Vector3 normal, Rect uvRect)
 	{
 		int ind1 = AddVertex(poly[0], normal, uvRect);
 
-		for (int i = 1; i < poly.Length - 1; i++)
+		for (int i = 1; i < poly.Count - 1; i++)
 		{
 			int ind2 = AddVertex(poly[i], normal, uvRect);
 			int ind3 = AddVertex(poly[i + 1], normal, uvRect);
@@ -127,10 +142,15 @@ public class OoSimpleDecalMeshBuilder
 			return;
 		}
 
-		mesh.vertices = _vertices.ToArray();
-		mesh.normals = _normals.ToArray();
-		mesh.uv = _texcoords.ToArray();
-		mesh.triangles = _indices.ToArray();
+		mesh.SetVertices(_vertices);
+		mesh.SetNormals(_normals);
+		mesh.SetUVs(0, _texcoords);
+		mesh.SetTriangles(_indices, 0);
+
+//		mesh.vertices = _vertices.ToArray();
+//		mesh.normals = _normals.ToArray();
+//		mesh.uv = _texcoords.ToArray();
+//		mesh.triangles = _indices.ToArray();
 
 		_vertices.Clear();
 		_normals.Clear();
