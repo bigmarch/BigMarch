@@ -30,16 +30,16 @@ public class OoSimpleDecalMeshBuilder
 
 		Mesh mesh = targetMeshFilter.sharedMesh;
 
-//		Profiler.BeginSample("Mesh");
+		Profiler.BeginSample("Mesh");
 
 		_vertList.Clear();
 		_triangleList.Clear();
 		mesh.GetVertices(_vertList);
 		mesh.GetTriangles(_triangleList, 0);
 
-//		Profiler.EndSample();
+		Profiler.EndSample();
 
-//		Profiler.BeginSample("Add");
+		Profiler.BeginSample("Add");
 
 		for (int i = 0; i < _triangleList.Count; i += 3)
 		{
@@ -56,7 +56,7 @@ public class OoSimpleDecalMeshBuilder
 			AddTriangle(v1, v2, v3, maxClipAngle);
 		}
 
-//		Profiler.EndSample();
+		Profiler.EndSample();
 	}
 
 	private void AddTriangle(Vector3 v1, Vector3 v2, Vector3 v3, float maxClipAngle)
@@ -67,10 +67,15 @@ public class OoSimpleDecalMeshBuilder
 
 		if (Vector3.Angle(Vector3.forward, -normal) <= maxClipAngle)
 		{
+			Profiler.BeginSample("Clip");
 			List<Vector3> poly = OoSimpleDecalUtility.Clip(v1, v2, v3);
+			Profiler.EndSample();
+
 			if (poly.Count > 0)
 			{
+				Profiler.BeginSample("AddPolygon");
 				AddPolygon(poly, normal, uvRect);
+				Profiler.EndSample();
 			}
 		}
 	}
@@ -92,19 +97,24 @@ public class OoSimpleDecalMeshBuilder
 
 	private int AddVertex(Vector3 vertex, Vector3 normal, Rect uvRect)
 	{
-		int index = FindVertex(vertex);
-		if (index == -1)
-		{
-			_vertices.Add(vertex);
-			_normals.Add(normal);
-			AddTexcoord(vertex, uvRect);
-			return _vertices.Count - 1;
-		}
-		else
-		{
-			_normals[index] = (_normals[index] + normal).normalized;
-			return index;
-		}
+		_vertices.Add(vertex);
+		_normals.Add(normal);
+		AddTexcoord(vertex, uvRect);
+		return _vertices.Count - 1;
+
+		// 下面这段逻辑，是找到两个相近的顶点。
+		// 如果遇到距离很近的两个顶点，那么只修正法线，不重复添加。
+		// 是对 decal mesh 的优化，但是其中遍历了所有 vertex，开销太大。一个球一个胶囊的情况下，关掉这个，10ms -> 5ms。
+//		int index = FindVertex(vertex);
+//		if (index == -1)
+//		{
+//			_vertices.Add(vertex);
+//			_normals.Add(normal);
+//			AddTexcoord(vertex, uvRect);
+//			return _vertices.Count - 1;
+//		}
+//		_normals[index] = (_normals[index] + normal).normalized;
+//		return index;
 	}
 
 	private int FindVertex(Vector3 vertex)
