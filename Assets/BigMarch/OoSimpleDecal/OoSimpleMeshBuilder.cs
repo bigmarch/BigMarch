@@ -30,16 +30,16 @@ public class OoSimpleDecalMeshBuilder
 
 		Mesh mesh = targetMeshFilter.sharedMesh;
 
-		Profiler.BeginSample("Mesh");
+//		Profiler.BeginSample("Mesh");
 
 		_vertList.Clear();
 		_triangleList.Clear();
 		mesh.GetVertices(_vertList);
 		mesh.GetTriangles(_triangleList, 0);
 
-		Profiler.EndSample();
+//		Profiler.EndSample();
 
-		Profiler.BeginSample("Add");
+//		Profiler.BeginSample("Add");
 
 		for (int i = 0; i < _triangleList.Count; i += 3)
 		{
@@ -56,7 +56,7 @@ public class OoSimpleDecalMeshBuilder
 			AddTriangle(v1, v2, v3, maxClipAngle);
 		}
 
-		Profiler.EndSample();
+//		Profiler.EndSample();
 	}
 
 	private void AddTriangle(Vector3 v1, Vector3 v2, Vector3 v3, float maxClipAngle)
@@ -67,15 +67,15 @@ public class OoSimpleDecalMeshBuilder
 
 		if (Vector3.Angle(Vector3.forward, -normal) <= maxClipAngle)
 		{
-			Profiler.BeginSample("Clip");
+//			Profiler.BeginSample("Clip");
 			List<Vector3> poly = OoSimpleDecalUtility.Clip(v1, v2, v3);
-			Profiler.EndSample();
+//			Profiler.EndSample();
 
 			if (poly.Count > 0)
 			{
-				Profiler.BeginSample("AddPolygon");
+//				Profiler.BeginSample("AddPolygon");
 				AddPolygon(poly, normal, uvRect);
-				Profiler.EndSample();
+//				Profiler.EndSample();
 			}
 		}
 	}
