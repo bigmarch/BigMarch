@@ -19,7 +19,6 @@ public class OoSimpleDecalUtility
 	private static readonly List<Vector3> _tempList0 = new List<Vector3>();
 	private static readonly List<Vector3> _tempList1 = new List<Vector3>();
 
-
 	public static List<Vector3> Clip(Vector3 v0, Vector3 v1, Vector3 v2)
 	{
 //		Profiler.BeginSample("0");
@@ -30,52 +29,89 @@ public class OoSimpleDecalUtility
 //		Profiler.EndSample();
 
 //		Profiler.BeginSample("1");
+
+		// 右侧
 		_tempList1.Clear();
-		Clip(_tempList0, _tempList1, right);
+		bool outOfRightPlane = ClipByPlane(_tempList0, _tempList1, right);
 
+		// 左侧
 		_tempList0.Clear();
-		Clip(_tempList1, _tempList0, left);
+		if (outOfRightPlane)
+		{
+			_tempList0.AddRange(_tempList1);
+		}
+		else
+		{
+			ClipByPlane(_tempList1, _tempList0, left);
+		}
 
+		// 上侧
 		_tempList1.Clear();
-		Clip(_tempList0, _tempList1, top);
+		bool outOfTopPlane = ClipByPlane(_tempList0, _tempList1, top);
 
+		// 下侧
 		_tempList0.Clear();
-		Clip(_tempList1, _tempList0, bottom);
+		if (outOfTopPlane)
+		{
+			_tempList0.AddRange(_tempList1);
+		}
+		else
+		{
+			ClipByPlane(_tempList1, _tempList0, bottom);
+		}
 
+		// 前侧
 		_tempList1.Clear();
-		Clip(_tempList0, _tempList1, front);
+		bool outOfFrontPlane = ClipByPlane(_tempList0, _tempList1, front);
 
+		// 后侧
 		_tempList0.Clear();
-		Clip(_tempList1, _tempList0, back);
-//		Profiler.EndSample();
+		if (outOfFrontPlane)
+		{
+			_tempList0.AddRange(_tempList1);
+		}
+		else
+		{
+			ClipByPlane(_tempList1, _tempList0, back);
+		}
+		//		Profiler.EndSample();
 
 		return _tempList0;
 	}
 
-	private static void Clip(List<Vector3> input, List<Vector3> output, Plane plane)
+	private static bool ClipByPlane(List<Vector3> input, List<Vector3> output, Plane plane)
 	{
+		Profiler.BeginSample("clip by plane");
+		// 是否所有的顶点，都在指定 plane 的外侧。
+		bool allVertexOutOfThePlane = true;
 		for (int i = 0; i < input.Count; i++)
 		{
 			int next = (i + 1) % input.Count;
 			Vector3 v1 = input[i];
 			Vector3 v2 = input[next];
 
-//			Profiler.BeginSample("get side");
-
+			Profiler.BeginSample("get side");
 			bool getSideV1 = plane.GetSide(v1);
 			bool getSideV2 = plane.GetSide(v2);
+			Profiler.EndSample();
 
 			if (getSideV1)
 			{
 				output.Add(v1);
+
+				// 只要有一个顶点在 plane 的内侧，结果即为 false。
+				allVertexOutOfThePlane = false;
 			}
 			if (getSideV1 != getSideV2)
 			{
+				Profiler.BeginSample("line cast");
 				output.Add(PlaneLineCast(plane, v1, v2));
+				Profiler.EndSample();
 			}
-
-//			Profiler.EndSample();
 		}
+		Profiler.EndSample();
+
+		return allVertexOutOfThePlane;
 	}
 
 	private static Vector3 PlaneLineCast(Plane plane, Vector3 a, Vector3 b)
