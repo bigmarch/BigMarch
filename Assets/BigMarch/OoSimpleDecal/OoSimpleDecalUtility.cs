@@ -21,60 +21,59 @@ public class OoSimpleDecalUtility
 
 	public static List<Vector3> Clip(Vector3 v0, Vector3 v1, Vector3 v2)
 	{
-//		Profiler.BeginSample("0");
 		_tempList0.Clear();
 		_tempList0.Add(v0);
 		_tempList0.Add(v1);
 		_tempList0.Add(v2);
-//		Profiler.EndSample();
-
-//		Profiler.BeginSample("1");
 
 		// 右侧
 		_tempList1.Clear();
 		bool outOfRightPlane = ClipByPlane(_tempList0, _tempList1, right);
+		if (outOfRightPlane)
+		{
+			return _tempList1;
+		}
 
 		// 左侧
 		_tempList0.Clear();
-		if (outOfRightPlane)
+		bool outOfLeftPlane = ClipByPlane(_tempList1, _tempList0, left);
+		if (outOfLeftPlane)
 		{
-			_tempList0.AddRange(_tempList1);
-		}
-		else
-		{
-			ClipByPlane(_tempList1, _tempList0, left);
+			return _tempList0;
 		}
 
 		// 上侧
 		_tempList1.Clear();
 		bool outOfTopPlane = ClipByPlane(_tempList0, _tempList1, top);
+		if (outOfTopPlane)
+		{
+			return _tempList1;
+		}
+
 
 		// 下侧
 		_tempList0.Clear();
-		if (outOfTopPlane)
+		bool outOfBottomPlane = ClipByPlane(_tempList1, _tempList0, bottom);
+		if (outOfBottomPlane)
 		{
-			_tempList0.AddRange(_tempList1);
-		}
-		else
-		{
-			ClipByPlane(_tempList1, _tempList0, bottom);
+			return _tempList0;
 		}
 
 		// 前侧
 		_tempList1.Clear();
 		bool outOfFrontPlane = ClipByPlane(_tempList0, _tempList1, front);
+		if (outOfFrontPlane)
+		{
+			return _tempList1;
+		}
 
 		// 后侧
 		_tempList0.Clear();
-		if (outOfFrontPlane)
+		bool outOfBackPlane = ClipByPlane(_tempList1, _tempList0, back);
+		if (outOfBackPlane)
 		{
-			_tempList0.AddRange(_tempList1);
+			return _tempList0;
 		}
-		else
-		{
-			ClipByPlane(_tempList1, _tempList0, back);
-		}
-		//		Profiler.EndSample();
 
 		return _tempList0;
 	}
@@ -90,10 +89,10 @@ public class OoSimpleDecalUtility
 			Vector3 v1 = input[i];
 			Vector3 v2 = input[next];
 
-			Profiler.BeginSample("get side");
+//			Profiler.BeginSample("get side");
 			bool getSideV1 = plane.GetSide(v1);
 			bool getSideV2 = plane.GetSide(v2);
-			Profiler.EndSample();
+//			Profiler.EndSample();
 
 			if (getSideV1)
 			{
@@ -104,9 +103,9 @@ public class OoSimpleDecalUtility
 			}
 			if (getSideV1 != getSideV2)
 			{
-				Profiler.BeginSample("line cast");
+//				Profiler.BeginSample("line cast");
 				output.Add(PlaneLineCast(plane, v1, v2));
-				Profiler.EndSample();
+//				Profiler.EndSample();
 			}
 		}
 		Profiler.EndSample();
