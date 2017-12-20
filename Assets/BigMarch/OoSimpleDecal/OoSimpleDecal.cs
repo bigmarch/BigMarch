@@ -28,24 +28,24 @@ public class OoSimpleDecal : MonoBehaviour
 
 	void OnEnable()
 	{
-#if UNITY_EDITOR
-		// editor 下的代码，目的是在 scene view 中按 F，摄像机能够放到合适的位置。
-		MeshFilter mf = GetComponent<MeshFilter>();
-		if (!mf)
-		{
-			mf = gameObject.AddComponent<MeshFilter>();
-		}
-		GameObject cubeGo = GameObject.CreatePrimitive(PrimitiveType.Cube);
-		mf.sharedMesh = cubeGo.GetComponent<MeshFilter>().sharedMesh;
-		DestroyImmediate(cubeGo);
-
-		MeshRenderer mr = GetComponent<MeshRenderer>();
-		if (!mr)
-		{
-			mr = gameObject.AddComponent<MeshRenderer>();
-		}
-		mr.enabled = false;
-#endif
+//#if UNITY_EDITOR
+//		// editor 下的代码，目的是在 scene view 中按 F，摄像机能够放到合适的位置。
+//		MeshFilter mf = GetComponent<MeshFilter>();
+//		if (!mf)
+//		{
+//			mf = gameObject.AddComponent<MeshFilter>();
+//		}
+//		GameObject cubeGo = GameObject.CreatePrimitive(PrimitiveType.Cube);
+//		mf.sharedMesh = cubeGo.GetComponent<MeshFilter>().sharedMesh;
+//		DestroyImmediate(cubeGo);
+//
+//		MeshRenderer mr = GetComponent<MeshRenderer>();
+//		if (!mr)
+//		{
+//			mr = gameObject.AddComponent<MeshRenderer>();
+//		}
+//		mr.enabled = false;
+//#endif
 
 		DestroyDecal();
 
@@ -53,6 +53,7 @@ public class OoSimpleDecal : MonoBehaviour
 		_decalMeshFilter = _decalObj.AddComponent<MeshFilter>();
 		_decalMeshRenderer = _decalObj.AddComponent<MeshRenderer>();
 		_decalMeshRenderer.sharedMaterial = DecalMaterial;
+
 		_decalObj.hideFlags = HideFlags.HideAndDontSave;
 
 		_decalObj.transform.position = Vector3.zero;
