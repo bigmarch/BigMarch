@@ -1,9 +1,8 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.Profiling;
 
 [ExecuteInEditMode]
-[RequireComponent(typeof(MeshFilter))]
-[RequireComponent(typeof(MeshRenderer))]
 public class OoSimpleDecal : MonoBehaviour
 {
 	[Header("是否自动更新mesh")]
@@ -14,27 +13,38 @@ public class OoSimpleDecal : MonoBehaviour
 	public float MaxClipAngle = 90;
 	[Header("新的三角面沿法线方向的外展距离")]
 	public float PushDistance = 0.01f;
+	[Header("Uv Area")]
+	public Rect UvArea = new Rect(0, 0, 1, 1);
+	[Header("Decal材质")]
+	public Material DecalMaterial;
+	
+	private GameObject _decalObj;
 
-	private MeshFilter _meshFilter;
-	private readonly OoSimpleDecalMeshBuilder _decalMeshBuilder = new OoSimpleDecalMeshBuilder();
+	private MeshFilter _decalMeshFilter;
+	private MeshRenderer _decalMeshRenderer;
+	private Mesh _decalMesh;
+
+	private OoSimpleDecalMeshBuilder _decalMeshBuilder = new OoSimpleDecalMeshBuilder();
 
 	void OnEnable()
 	{
-		if (!_meshFilter)
-		{
-			_meshFilter = GetComponent<MeshFilter>();
-		}
+		DestroyDecal();
 
-		if (_meshFilter.sharedMesh != null)
-		{
-			DestroyImmediate(_meshFilter.sharedMesh);
-			_meshFilter.sharedMesh = null;
-		}
+		_decalObj = new GameObject("[Decal: " + gameObject.name + "]");
+		_decalMeshFilter = _decalObj.AddComponent<MeshFilter>();
+		_decalMeshRenderer = _decalObj.AddComponent<MeshRenderer>();
+		_decalMeshRenderer.sharedMaterial = DecalMaterial;
+		_decalObj.hideFlags = HideFlags.DontSave | HideFlags.HideAndDontSave;
 
-		Mesh m = new Mesh();
-		m.name = "Decal Mesh";
-		m.MarkDynamic();
-		_meshFilter.sharedMesh = m;
+		_decalObj.transform.position = Vector3.zero;
+		_decalObj.transform.rotation = Quaternion.identity;
+		_decalObj.transform.localScale = Vector3.one;
+
+		_decalMesh = new Mesh();
+		_decalMesh.name = "Decal Mesh";
+		_decalMesh.MarkDynamic();
+
+		_decalMeshFilter.sharedMesh = _decalMesh;
 
 		if (AutoUpdateMesh)
 		{
@@ -44,18 +54,21 @@ public class OoSimpleDecal : MonoBehaviour
 
 	void OnDisable()
 	{
-		if (_meshFilter.sharedMesh != null)
-		{
-			DestroyImmediate(_meshFilter.sharedMesh);
-			_meshFilter.sharedMesh = null;
-		}
+		DestroyDecal();
 	}
 
-//
-//	// Use this for initialization
-//	void Start()
-//	{
-//	}
+	private void DestroyDecal()
+	{
+		if (_decalObj)
+		{
+			DestroyImmediate(_decalObj);
+		}
+
+		if (_decalMesh)
+		{
+			DestroyImmediate(_decalMesh);
+		}
+	}
 
 	// Update is called once per frame
 	void Update()
@@ -69,6 +82,19 @@ public class OoSimpleDecal : MonoBehaviour
 	[ContextMenu("Build Mesh")]
 	public void ReGenerateMesh()
 	{
+		// 世界空间的6个 clip plane。right 就是 transform.right 方向的那个 Plane。
+		Plane right = new Plane(-transform.right, transform.position + transform.right * .5f * transform.lossyScale.x);
+		Plane left = new Plane(transform.right, transform.position - transform.right * .5f * transform.lossyScale.x);
+
+		Plane top = new Plane(-transform.up, transform.position + transform.up * .5f * transform.lossyScale.y);
+		Plane bottom = new Plane(transform.up, transform.position - transform.up * .5f * transform.lossyScale.y);
+
+		Plane front = new Plane(-transform.forward, transform.position + transform.forward * .5f * transform.lossyScale.z);
+		Plane back = new Plane(transform.forward, transform.position - transform.forward * .5f * transform.lossyScale.z);
+
+//		DrawPlane(transform.position - transform.right * .5f * transform.lossyScale.x, transform.right);
+//		DrawPlane(transform.position + transform.right * .5f* transform.lossyScale.x, -transform.right);
+
 		_decalMeshBuilder.Clear();
 		for (int i = 0; i < TargetObjects.Length; i++)
 		{
@@ -78,7 +104,14 @@ public class OoSimpleDecal : MonoBehaviour
 				if (mf)
 				{
 					Profiler.BeginSample("Build");
-					_decalMeshBuilder.Build(transform, mf, MaxClipAngle);
+					_decalMeshBuilder.Build(
+						mf,
+						right, left,
+						top, bottom,
+						front, back,
+						UvArea,
+						PushDistance,
+						MaxClipAngle);
 					Profiler.EndSample();
 				}
 			}
@@ -86,14 +119,39 @@ public class OoSimpleDecal : MonoBehaviour
 		_decalMeshBuilder.Push(PushDistance);
 
 		Profiler.BeginSample("FillToMeshAndClear");
-		_decalMeshBuilder.FillToMeshAndClear(_meshFilter.sharedMesh);
+		_decalMeshBuilder.FillToMeshAndClear(_decalMeshFilter.sharedMesh);
 		Profiler.EndSample();
 	}
 
 	void OnDrawGizmosSelected()
 	{
 		Gizmos.matrix = transform.localToWorldMatrix;
-		Gizmos.DrawWireCube(Vector3.zero, Vector3.one);
+		Gizmos.DrawWireCube(Vector3.zero, Vector3.one);		
+	}
+
+	private void DrawPlane(Vector3 position, Vector3 normal)
+	{
+		Vector3 v3;
+
+		if (normal.normalized != Vector3.forward)
+			v3 = Vector3.Cross(normal, Vector3.forward).normalized * normal.magnitude;
+		else
+			v3 = Vector3.Cross(normal, Vector3.up).normalized * normal.magnitude;
+
+		var corner0 = position + v3;
+		var corner2 = position - v3;
+		var q = Quaternion.AngleAxis(90.0f, normal);
+		v3 = q * v3;
+		var corner1 = position + v3;
+		var corner3 = position - v3;
+
+		Debug.DrawLine(corner0, corner2, Color.green);
+		Debug.DrawLine(corner1, corner3, Color.green);
+		Debug.DrawLine(corner0, corner1, Color.green);
+		Debug.DrawLine(corner1, corner2, Color.green);
+		Debug.DrawLine(corner2, corner3, Color.green);
+		Debug.DrawLine(corner3, corner0, Color.green);
+		Debug.DrawRay(position, normal, Color.red);
 	}
 }
 

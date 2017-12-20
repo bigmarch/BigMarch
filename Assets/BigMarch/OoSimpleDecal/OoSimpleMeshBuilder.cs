@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using BigMarch.Tool;
 using UnityEngine;
 using UnityEngine.Profiling;
 
@@ -6,35 +7,90 @@ public class OoSimpleDecalMeshBuilder
 {
 	private readonly List<Vector3> _vertices = new List<Vector3>();
 	private readonly List<Vector3> _normals = new List<Vector3>();
-	private readonly List<Vector2> _texcoords = new List<Vector2>();
+	private readonly List<Vector2> _texcoords0 = new List<Vector2>();
+	private readonly List<Vector2> _texcoords1 = new List<Vector2>();
 	private readonly List<int> _indices = new List<int>();
 
 	//	public void Clear()
 	//	{
 	//		_vertices.Clear();
 	//		_normals.Clear();
-	//		_texcoords.Clear();
+	//		_texcoords1.Clear();
 	//		_indices.Clear();
 	//	}
 
+	// 以下 list 是缓存的源 mesh 的数据。
 	private List<Vector3> _vertList = new List<Vector3>();
+	private List<Vector3> _normalList = new List<Vector3>();
+	private List<Vector2> _uvList = new List<Vector2>();
 	private List<int> _triangleList = new List<int>();
+
+	// 世界空间的6个 plane，用于 clip。
+	private Plane _rightPlane;
+	private Plane _leftPlane;
+	private Plane _topPlane;
+	private Plane _bottomPlane;
+	private Plane _frontPlane;
+	private Plane _backPlane;
+	private Rect _uvArea;
+	private float _pushDistance;
+
+	private float _leftRightDistance;
+	private float _topBottomDistance;
 
 	// builder 是一个 mesh 数据的容器。
 	public void Build(
-		Transform decalTransform,
 		MeshFilter targetMeshFilter,
+		Plane right, Plane left,
+		Plane top, Plane bottom,
+		Plane front, Plane back,
+		Rect uvArea,
+		float pushDistance,
 		float maxClipAngle)
 	{
-		Matrix4x4 objToDecalMatrix = decalTransform.worldToLocalMatrix * targetMeshFilter.transform.localToWorldMatrix;
+		_rightPlane = right;
+		_leftPlane = left;
+		_topPlane = top;
+		_bottomPlane = bottom;
+		_frontPlane = front;
+		_backPlane = back;
+
+		_leftRightDistance = _rightPlane.distance + _leftPlane.distance;
+		_topBottomDistance = _topPlane.distance + _bottomPlane.distance;
+
+		_uvArea = uvArea;
+		_pushDistance = pushDistance;
+
+		//		// vector 的变换矩阵，是没有缩放信息的。
+		//		// 如果带有缩放信息，对于xyz不相等的缩放，原本模型顶点的法线会变形，因此用于变换 vector 的矩阵，缩放为111。
+		//		// TRS 出来是 local to world, inverse 出来之后是 world to local。
+		//		Matrix4x4 decalWorldToLocalMatrix_vector =
+		//			Matrix4x4.TRS(decalMakerTransform.position, decalMakerTransform.rotation, Vector3.one).inverse;
+		//		Matrix4x4 objToDecalMatrix_vector = decalWorldToLocalMatrix_vector * targetMeshFilter.transform.localToWorldMatrix;
+		//
+		//		// point 的变换矩阵，需要包含缩放信息。
+		//		// 带有缩放信息时，clip 出来的点，才能紧贴目标模型的表面。
+		//		Matrix4x4 decalWorldToLocalMatrix_point = decalMakerTransform.worldToLocalMatrix;
+		//		Matrix4x4 objToDecalMatrix_point = decalWorldToLocalMatrix_point * targetMeshFilter.transform.localToWorldMatrix;
+
+		// TODO  在世界空间进行裁剪
+		//		Matrix4x4 objToDecalMakerMatrix = decalMakerTransform.worldToLocalMatrix * targetMeshFilter.transform.localToWorldMatrix;
+
+		Matrix4x4 objToWorldMatrix = targetMeshFilter.transform.localToWorldMatrix;
 
 		Mesh mesh = targetMeshFilter.sharedMesh;
 
 //		Profiler.BeginSample("Mesh");
 
 		_vertList.Clear();
+		_normalList.Clear();
+		_uvList.Clear();
 		_triangleList.Clear();
+
 		mesh.GetVertices(_vertList);
+		mesh.GetNormals(_normalList);
+		mesh.GetUVs(0, _uvList);
+
 		mesh.GetTriangles(_triangleList, 0);
 
 //		Profiler.EndSample();
@@ -43,51 +99,80 @@ public class OoSimpleDecalMeshBuilder
 
 		for (int i = 0; i < _triangleList.Count; i += 3)
 		{
-			int i1 = _triangleList[i];
-			int i2 = _triangleList[i + 1];
-			int i3 = _triangleList[i + 2];
+			int i0 = _triangleList[i];
+			int i1 = _triangleList[i + 1];
+			int i2 = _triangleList[i + 2];
 
 			// 把 target mesh 中的点转换到 decal 的本地空间。
-			Vector3 v1 = objToDecalMatrix.MultiplyPoint(_vertList[i1]);
-			Vector3 v2 = objToDecalMatrix.MultiplyPoint(_vertList[i2]);
-			Vector3 v3 = objToDecalMatrix.MultiplyPoint(_vertList[i3]);
+			Vector3 v0 = objToWorldMatrix.MultiplyPoint(_vertList[i0]);
+			Vector3 v1 = objToWorldMatrix.MultiplyPoint(_vertList[i1]);
+			Vector3 v2 = objToWorldMatrix.MultiplyPoint(_vertList[i2]);
+
+			Vector3 n0 = objToWorldMatrix.MultiplyVector(_normalList[i0]);
+			Vector3 n1 = objToWorldMatrix.MultiplyVector(_normalList[i1]);
+			Vector3 n2 = objToWorldMatrix.MultiplyVector(_normalList[i2]);
+
+			Vector2 uv0 = _uvList[i0];
+			Vector2 uv1 = _uvList[i1];
+			Vector2 uv2 = _uvList[i2];
 
 			// 把三个点加到 builder 中。
-			AddTriangle(v1, v2, v3, maxClipAngle);
+			AddTriangle(
+				v0, v1, v2,
+				n0, n1, n2,
+				uv0, uv1, uv2,
+				maxClipAngle);
 		}
 
 		Profiler.EndSample();
 	}
 
-	private void AddTriangle(Vector3 v1, Vector3 v2, Vector3 v3, float maxClipAngle)
+	private void AddTriangle(
+		Vector3 v0, Vector3 v1, Vector3 v2,
+		Vector3 n0, Vector3 n1, Vector3 n2,
+		Vector2 uv0, Vector2 uv1, Vector2 uv2,
+		float maxClipAngle)
 	{
-		//		Rect uvRect = To01(decal.sprite.textureRect, decal.sprite.texture);
-		Rect uvRect = new Rect(0, 0, 1, 1);
-		Vector3 normal = Vector3.Cross(v2 - v1, v3 - v1).normalized;
+		Vector3 polygonNormal = Vector3.Cross(v1 - v0, v2 - v0).normalized;
 
-		if (Vector3.Angle(Vector3.forward, -normal) <= maxClipAngle)
+		// back.normal 是后侧面儿的法线，跟 transform.forward 相同。
+		if (Vector3.Angle(_backPlane.normal, -polygonNormal) <= maxClipAngle)
 		{
 			Profiler.BeginSample("Clip");
-			List<Vector3> poly = OoSimpleDecalUtility.Clip(v1, v2, v3);
+
+			List<Vector3> vertexList;
+			List<Vector3> normalList;
+			List<Vector2> uvList;
+			OoSimpleDecalUtility.Clip(
+				out vertexList,
+				out normalList,
+				out uvList,
+				v0, v1, v2,
+				n0, n1, n2,
+				uv0, uv1, uv2,
+				_rightPlane, _leftPlane,
+				_topPlane, _bottomPlane,
+				_frontPlane, _backPlane);
+
 			Profiler.EndSample();
 
-			if (poly.Count > 0)
+			if (vertexList.Count > 0)
 			{
 				Profiler.BeginSample("AddPolygon");
-				AddPolygon(poly, normal, uvRect);
+				AddPolygon(vertexList, normalList, uvList);
 				Profiler.EndSample();
 			}
 		}
 	}
 
-	private void AddPolygon(List<Vector3> poly, Vector3 normal, Rect uvRect)
+	private void AddPolygon(List<Vector3> polyVertice, List<Vector3> polyNormal, List<Vector2> polyUv)
 	{
-		int ind1 = AddVertex(poly[0], normal, uvRect);
+		int ind1 = AddVertex(polyVertice[0], polyNormal[0], polyUv[0]);
 
-		for (int i = 1; i < poly.Count - 1; i++)
+		for (int i = 1; i < polyVertice.Count - 1; i++)
 		{
-			int ind2 = AddVertex(poly[i], normal, uvRect);
-			int ind3 = AddVertex(poly[i + 1], normal, uvRect);
+			int ind2 = AddVertex(polyVertice[i], polyNormal[i], polyUv[i]);
+			int ind3 = AddVertex(polyVertice[i + 1], polyNormal[i + 1], polyUv[i + 1]);
 
 			_indices.Add(ind1);
 			_indices.Add(ind2);
@@ -95,42 +180,24 @@ public class OoSimpleDecalMeshBuilder
 		}
 	}
 
-	private int AddVertex(Vector3 vertex, Vector3 normal, Rect uvRect)
+	private int AddVertex(Vector3 vertex, Vector3 normal, Vector2 uv)
 	{
-		_vertices.Add(vertex);
+		// 存入 push 后的 vertex。
+		_vertices.Add(vertex + normal * _pushDistance);
 		_normals.Add(normal);
-		AddTexcoord(vertex, uvRect);
+
+		// uv0 是 decal mesh 的默认 uv，根据上下左右的 Plane 差值而得。
+		float u = _leftPlane.GetDistanceToPoint(vertex) / _leftRightDistance;
+		float v = _bottomPlane.GetDistanceToPoint(vertex) / _topBottomDistance;
+
+		u = u.Remap(0, 1, _uvArea.xMin, _uvArea.xMax);
+		v = v.Remap(0, 1, _uvArea.yMin, _uvArea.yMax);
+		_texcoords0.Add(new Vector2(u, v));
+
+		// 这里的 uv，是源 mesh 的 uv0，在 decal mesh 中，存在 uv1 中。
+		_texcoords1.Add(uv);
+
 		return _vertices.Count - 1;
-
-		// 下面这段逻辑，是找到两个相近的顶点。
-		// 如果遇到距离很近的两个顶点，那么只修正法线，不重复添加。
-		// 是对 decal mesh 的优化，但是其中遍历了所有 vertex，开销太大。一个球一个胶囊的情况下，关掉这个，10ms -> 5ms。
-//		int index = FindVertex(vertex);
-//		if (index == -1)
-//		{
-//			_vertices.Add(vertex);
-//			_normals.Add(normal);
-//			AddTexcoord(vertex, uvRect);
-//			return _vertices.Count - 1;
-//		}
-//		_normals[index] = (_normals[index] + normal).normalized;
-//		return index;
-	}
-
-	private int FindVertex(Vector3 vertex)
-	{
-		for (int i = 0; i < _vertices.Count; i++)
-		{
-			if (Vector3.Distance(_vertices[i], vertex) < 0.01f) return i;
-		}
-		return -1;
-	}
-
-	private void AddTexcoord(Vector3 ver, Rect uvRect)
-	{
-		float u = Mathf.Lerp(uvRect.xMin, uvRect.xMax, ver.x + 0.5f);
-		float v = Mathf.Lerp(uvRect.yMin, uvRect.yMax, ver.y + 0.5f);
-		_texcoords.Add(new Vector2(u, v));
 	}
 
 	// 让每一个顶点沿着法线方向外展
@@ -138,7 +205,6 @@ public class OoSimpleDecalMeshBuilder
 	{
 		for (int i = 0; i < _vertices.Count; i++)
 		{
-			_vertices[i] += _normals[i] * distance;
 		}
 	}
 
@@ -154,25 +220,19 @@ public class OoSimpleDecalMeshBuilder
 
 		mesh.SetVertices(_vertices);
 		mesh.SetNormals(_normals);
-		mesh.SetUVs(0, _texcoords);
+		mesh.SetUVs(0, _texcoords0);
+		mesh.SetUVs(1, _texcoords1);
 		mesh.SetTriangles(_indices, 0);
 
-//		mesh.vertices = _vertices.ToArray();
-//		mesh.normals = _normals.ToArray();
-//		mesh.uv = _texcoords.ToArray();
-//		mesh.triangles = _indices.ToArray();
-
-		_vertices.Clear();
-		_normals.Clear();
-		_texcoords.Clear();
-		_indices.Clear();
+		Clear();
 	}
 
 	public void Clear()
 	{
 		_vertices.Clear();
 		_normals.Clear();
-		_texcoords.Clear();
+		_texcoords0.Clear();
+		_texcoords1.Clear();
 		_indices.Clear();
 	}
 }
