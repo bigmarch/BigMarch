@@ -77,6 +77,7 @@ public class OoSimpleDecal : MonoBehaviour
 		{
 			ReGenerateMesh();
 		}
+
 	}
 
 	[ContextMenu("Build Mesh")]
@@ -127,6 +128,11 @@ public class OoSimpleDecal : MonoBehaviour
 	{
 		Gizmos.matrix = transform.localToWorldMatrix;
 		Gizmos.DrawWireCube(Vector3.zero, Vector3.one);		
+	}
+
+	private void OnValidate()
+	{
+		_decalMeshRenderer.sharedMaterial = DecalMaterial;
 	}
 
 	private void DrawPlane(Vector3 position, Vector3 normal)
