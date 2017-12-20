@@ -137,7 +137,6 @@ public class OoSimpleDecal : MonoBehaviour
 				}
 			}
 		}
-		_decalMeshBuilder.Push(PushDistance);
 
 		Profiler.BeginSample("FillToMeshAndClear");
 		_decalMeshBuilder.FillToMeshAndClear(_decalMeshFilter.sharedMesh);

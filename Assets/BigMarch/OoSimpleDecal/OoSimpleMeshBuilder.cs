@@ -200,14 +200,6 @@ public class OoSimpleDecalMeshBuilder
 		return _vertices.Count - 1;
 	}
 
-	// 让每一个顶点沿着法线方向外展
-	public void Push(float distance)
-	{
-		for (int i = 0; i < _vertices.Count; i++)
-		{
-		}
-	}
-
 	// 把 builder 中的数据填充到 mesh 中，并清空。
 	public void FillToMeshAndClear(Mesh mesh)
 	{
