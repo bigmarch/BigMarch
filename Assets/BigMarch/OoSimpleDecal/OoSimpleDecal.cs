@@ -28,13 +28,32 @@ public class OoSimpleDecal : MonoBehaviour
 
 	void OnEnable()
 	{
+#if UNITY_EDITOR
+		// editor 下的代码，目的是在 scene view 中按 F，摄像机能够放到合适的位置。
+		MeshFilter mf = GetComponent<MeshFilter>();
+		if (!mf)
+		{
+			mf = gameObject.AddComponent<MeshFilter>();
+		}
+		GameObject cubeGo = GameObject.CreatePrimitive(PrimitiveType.Cube);
+		mf.sharedMesh = cubeGo.GetComponent<MeshFilter>().sharedMesh;
+		DestroyImmediate(cubeGo);
+
+		MeshRenderer mr = GetComponent<MeshRenderer>();
+		if (!mr)
+		{
+			mr = gameObject.AddComponent<MeshRenderer>();
+		}
+		mr.enabled = false;
+#endif
+
 		DestroyDecal();
 
 		_decalObj = new GameObject("[Decal: " + gameObject.name + "]");
 		_decalMeshFilter = _decalObj.AddComponent<MeshFilter>();
 		_decalMeshRenderer = _decalObj.AddComponent<MeshRenderer>();
 		_decalMeshRenderer.sharedMaterial = DecalMaterial;
-		_decalObj.hideFlags = HideFlags.DontSave | HideFlags.HideAndDontSave;
+		_decalObj.hideFlags = HideFlags.HideAndDontSave;
 
 		_decalObj.transform.position = Vector3.zero;
 		_decalObj.transform.rotation = Quaternion.identity;
@@ -43,6 +62,7 @@ public class OoSimpleDecal : MonoBehaviour
 		_decalMesh = new Mesh();
 		_decalMesh.name = "Decal Mesh";
 		_decalMesh.MarkDynamic();
+		_decalMesh.hideFlags = HideFlags.HideAndDontSave;
 
 		_decalMeshFilter.sharedMesh = _decalMesh;
 
@@ -77,7 +97,6 @@ public class OoSimpleDecal : MonoBehaviour
 		{
 			ReGenerateMesh();
 		}
-
 	}
 
 	[ContextMenu("Build Mesh")]
@@ -132,7 +151,10 @@ public class OoSimpleDecal : MonoBehaviour
 
 	private void OnValidate()
 	{
-		_decalMeshRenderer.sharedMaterial = DecalMaterial;
+		if(_decalMeshRenderer != null)
+		{
+			_decalMeshRenderer.sharedMaterial = DecalMaterial;
+		}
 	}
 
 	private void DrawPlane(Vector3 position, Vector3 normal)
