@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Profiling;
 
@@ -155,6 +156,46 @@ public class OoSimpleDecal : MonoBehaviour
 		{
 			_decalMeshRenderer.sharedMaterial = DecalMaterial;
 		}
+	}
+
+	[ContextMenu("Create Decal Instance")]
+	private void SaveAsset()
+	{
+		GameObject newGo = new GameObject("decal instance", typeof(MeshFilter), typeof(MeshRenderer));
+		newGo.transform.position = transform.position;
+		newGo.transform.rotation = transform.rotation;
+		newGo.transform.localScale = Vector3.one;
+
+		Matrix4x4 mat = newGo.transform.worldToLocalMatrix * _decalObj.transform.localToWorldMatrix;
+
+		List<Vector3> verticeList = new List<Vector3>();
+		List<Vector3> normalList = new List<Vector3>();
+		List<Vector2> uv0List = new List<Vector2>();
+		List<Vector2> uv1List = new List<Vector2>();
+		List<int> triList = new List<int>();
+
+		Mesh oldMesh = _decalMeshFilter.sharedMesh;
+		oldMesh.GetVertices(verticeList);
+		oldMesh.GetNormals(normalList);
+		oldMesh.GetUVs(0, uv0List);
+		oldMesh.GetUVs(1, uv1List);
+		oldMesh.GetTriangles(triList, 0);
+
+		for (int i = 0; i < oldMesh.vertexCount; i++)
+		{
+			verticeList[i] = mat.MultiplyPoint(verticeList[i]);
+			normalList[i] = mat.MultiplyVector(normalList[i]);
+		}
+
+		Mesh newMesh = new Mesh();
+		newMesh.SetVertices(verticeList);
+		newMesh.SetNormals(normalList);
+		newMesh.SetUVs(0, uv0List);
+		newMesh.SetUVs(1, uv1List);
+		newMesh.SetTriangles(triList, 0);
+
+		newGo.GetComponent<MeshFilter>().sharedMesh = newMesh;
+		newGo.GetComponent<MeshRenderer>().sharedMaterial = _decalMeshRenderer.sharedMaterial;
 	}
 
 	private void DrawPlane(Vector3 position, Vector3 normal)
