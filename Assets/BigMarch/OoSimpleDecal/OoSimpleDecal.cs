@@ -29,27 +29,33 @@ public class OoSimpleDecal : MonoBehaviour
 
 	void OnEnable()
 	{
-//#if UNITY_EDITOR
-//		// editor 下的代码，目的是在 scene view 中按 F，摄像机能够放到合适的位置。
-//		MeshFilter mf = GetComponent<MeshFilter>();
-//		if (!mf)
-//		{
-//			mf = gameObject.AddComponent<MeshFilter>();
-//		}
-//		GameObject cubeGo = GameObject.CreatePrimitive(PrimitiveType.Cube);
-//		mf.sharedMesh = cubeGo.GetComponent<MeshFilter>().sharedMesh;
-//		DestroyImmediate(cubeGo);
-//
-//		MeshRenderer mr = GetComponent<MeshRenderer>();
-//		if (!mr)
-//		{
-//			mr = gameObject.AddComponent<MeshRenderer>();
-//		}
-//		mr.enabled = false;
-//#endif
+#if UNITY_EDITOR
+		// editor 下的代码，目的是在 scene view 中按 F，摄像机能够放到合适的位置。
+		MeshFilter mf = GetComponent<MeshFilter>();
+		if (!mf)
+		{
+			mf = gameObject.AddComponent<MeshFilter>();
+		}
+		mf.hideFlags = HideFlags.HideAndDontSave;
 
+
+		GameObject cubeGo = GameObject.CreatePrimitive(PrimitiveType.Cube);
+		mf.sharedMesh = cubeGo.GetComponent<MeshFilter>().sharedMesh;
+		DestroyImmediate(cubeGo);
+
+		MeshRenderer mr = GetComponent<MeshRenderer>();
+		if (!mr)
+		{
+			mr = gameObject.AddComponent<MeshRenderer>();
+		}
+		mr.hideFlags = HideFlags.HideAndDontSave;
+		mr.enabled = false;
+#endif
+
+		// 删除所以已有数据。
 		DestroyDecal();
 
+		// 创建 decal。
 		_decalObj = new GameObject("[Decal: " + gameObject.name + "]");
 		_decalMeshFilter = _decalObj.AddComponent<MeshFilter>();
 		_decalMeshRenderer = _decalObj.AddComponent<MeshRenderer>();
@@ -114,7 +120,8 @@ public class OoSimpleDecal : MonoBehaviour
 		Plane front = new Plane(-transform.forward, transform.position + transform.forward * .5f * transform.lossyScale.z);
 		Plane back = new Plane(transform.forward, transform.position - transform.forward * .5f * transform.lossyScale.z);
 
-//		DrawPlane(transform.position - transform.right * .5f * transform.lossyScale.x, transform.right);
+//		_gizmoSize = new Vector3(right.distance, top.distance, front.distance);
+//		DrawPlane(right.ClosestPointOnPlane(transform.position), right.normal);
 //		DrawPlane(transform.position + transform.right * .5f* transform.lossyScale.x, -transform.right);
 
 		_decalMeshBuilder.Clear();
@@ -145,9 +152,9 @@ public class OoSimpleDecal : MonoBehaviour
 	}
 
 	void OnDrawGizmosSelected()
-	{
-		Gizmos.matrix = transform.localToWorldMatrix;
-		Gizmos.DrawWireCube(Vector3.zero, Vector3.one);		
+	{		
+		Gizmos.matrix = Matrix4x4.TRS(transform.position, transform.rotation, transform.lossyScale);
+		Gizmos.DrawWireCube(Vector3.zero, Vector3.one);
 	}
 
 	private void OnValidate()
@@ -196,31 +203,6 @@ public class OoSimpleDecal : MonoBehaviour
 
 		newGo.GetComponent<MeshFilter>().sharedMesh = newMesh;
 		newGo.GetComponent<MeshRenderer>().sharedMaterial = _decalMeshRenderer.sharedMaterial;
-	}
-
-	private void DrawPlane(Vector3 position, Vector3 normal)
-	{
-		Vector3 v3;
-
-		if (normal.normalized != Vector3.forward)
-			v3 = Vector3.Cross(normal, Vector3.forward).normalized * normal.magnitude;
-		else
-			v3 = Vector3.Cross(normal, Vector3.up).normalized * normal.magnitude;
-
-		var corner0 = position + v3;
-		var corner2 = position - v3;
-		var q = Quaternion.AngleAxis(90.0f, normal);
-		v3 = q * v3;
-		var corner1 = position + v3;
-		var corner3 = position - v3;
-
-		Debug.DrawLine(corner0, corner2, Color.green);
-		Debug.DrawLine(corner1, corner3, Color.green);
-		Debug.DrawLine(corner0, corner1, Color.green);
-		Debug.DrawLine(corner1, corner2, Color.green);
-		Debug.DrawLine(corner2, corner3, Color.green);
-		Debug.DrawLine(corner3, corner0, Color.green);
-		Debug.DrawRay(position, normal, Color.red);
 	}
 }
 
