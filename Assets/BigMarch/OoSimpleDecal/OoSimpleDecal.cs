@@ -56,7 +56,7 @@ public class OoSimpleDecal : MonoBehaviour
 		DestroyDecal();
 
 		// 创建 decal。
-		_decalObj = new GameObject("[Decal: " + gameObject.name + "]");
+		_decalObj = new GameObject("Decal from [" + gameObject.name + "]");
 		_decalMeshFilter = _decalObj.AddComponent<MeshFilter>();
 		_decalMeshRenderer = _decalObj.AddComponent<MeshRenderer>();
 		_decalMeshRenderer.sharedMaterial = DecalMaterial;
@@ -166,14 +166,14 @@ public class OoSimpleDecal : MonoBehaviour
 	}
 
 	[ContextMenu("Create Decal Instance")]
-	private void SaveAsset()
+	private GameObject CreateDecalInstance()
 	{
-		GameObject newGo = new GameObject("decal instance", typeof(MeshFilter), typeof(MeshRenderer));
-		newGo.transform.position = transform.position;
-		newGo.transform.rotation = transform.rotation;
-		newGo.transform.localScale = Vector3.one;
+		GameObject decalInstanceGo = new GameObject("decal instance", typeof(MeshFilter), typeof(MeshRenderer));
+		decalInstanceGo.transform.position = transform.position;
+		decalInstanceGo.transform.rotation = transform.rotation;
+		decalInstanceGo.transform.localScale = Vector3.one;
 
-		Matrix4x4 mat = newGo.transform.worldToLocalMatrix * _decalObj.transform.localToWorldMatrix;
+		Matrix4x4 mat = decalInstanceGo.transform.worldToLocalMatrix * _decalObj.transform.localToWorldMatrix;
 
 		List<Vector3> verticeList = new List<Vector3>();
 		List<Vector3> normalList = new List<Vector3>();
@@ -201,8 +201,10 @@ public class OoSimpleDecal : MonoBehaviour
 		newMesh.SetUVs(1, uv1List);
 		newMesh.SetTriangles(triList, 0);
 
-		newGo.GetComponent<MeshFilter>().sharedMesh = newMesh;
-		newGo.GetComponent<MeshRenderer>().sharedMaterial = _decalMeshRenderer.sharedMaterial;
+		decalInstanceGo.GetComponent<MeshFilter>().sharedMesh = newMesh;
+		decalInstanceGo.GetComponent<MeshRenderer>().sharedMaterial = _decalMeshRenderer.sharedMaterial;
+
+		return decalInstanceGo;
 	}
 }
 
