@@ -23,7 +23,6 @@ public class DecalItemSet : ScriptableObject
 		public float PushDistance;
 	}
 
-	public string TankName;
 	public List<DecalItem> DecalItemList;
 
 	public void SpawnDecalAt(Transform target)
