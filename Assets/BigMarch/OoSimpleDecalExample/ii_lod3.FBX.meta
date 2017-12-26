@@ -1,0 +1,201 @@
+fileFormatVersion: 2
+guid: 5904d4c9991619d438e06942e914bb31
+timeCreated: 1514279096
+licenseType: Free
+ModelImporter:
+  serializedVersion: 21
+  fileIDToRecycleName:
+    100000: attach
+    100002: barrel_01
+    100004: barrel_02
+    100006: body
+    100008: D_Barrel_Fire_01
+    100010: D_Barrel_Fire_02
+    100012: D_Blow
+    100014: D_Engine
+    100016: D_Galtling_Fire
+    100018: D_Gun_Fire
+    100020: D_Light_Left
+    100022: D_Light_Right
+    100024: D_Parts_005
+    100026: D_Parts_01
+    100028: D_Parts_02
+    100030: D_Parts_03
+    100032: D_Parts_04
+    100034: D_Smoke01
+    100036: D_Smoke02
+    100038: D_Track_Back_Left
+    100040: D_Track_Back_Right
+    100042: D_Track_Front_Left
+    100044: D_Track_Front_Right
+    100046: //RootNode
+    100048: lefttrack
+    100050: leftwheel
+    100052: righttrack
+    100054: rightwheel
+    100056: S_Antenna01
+    100058: S_Antenna02
+    100060: S_Antenna03
+    100062: S_Barrel
+    100064: S_Barrel_Front_01
+    100066: S_Barrel_Front_02
+    100068: S_Body
+    100070: S_Galtling
+    100072: S_Gear_Left_Back
+    100074: S_Gear_Left_Front
+    100076: S_Gear_Right_Back
+    100078: S_Gear_Right_Front
+    100080: S_Gun
+    100082: S_Link
+    100084: S_Master
+    100086: S_Turret
+    100088: S_Wheel_Left_01
+    100090: S_Wheel_Left_06
+    100092: S_Wheel_Right_01
+    100094: S_Wheel_Right_06
+    100096: shadow
+    400000: attach
+    400002: barrel_01
+    400004: barrel_02
+    400006: body
+    400008: D_Barrel_Fire_01
+    400010: D_Barrel_Fire_02
+    400012: D_Blow
+    400014: D_Engine
+    400016: D_Galtling_Fire
+    400018: D_Gun_Fire
+    400020: D_Light_Left
+    400022: D_Light_Right
+    400024: D_Parts_005
+    400026: D_Parts_01
+    400028: D_Parts_02
+    400030: D_Parts_03
+    400032: D_Parts_04
+    400034: D_Smoke01
+    400036: D_Smoke02
+    400038: D_Track_Back_Left
+    400040: D_Track_Back_Right
+    400042: D_Track_Front_Left
+    400044: D_Track_Front_Right
+    400046: //RootNode
+    400048: lefttrack
+    400050: leftwheel
+    400052: righttrack
+    400054: rightwheel
+    400056: S_Antenna01
+    400058: S_Antenna02
+    400060: S_Antenna03
+    400062: S_Barrel
+    400064: S_Barrel_Front_01
+    400066: S_Barrel_Front_02
+    400068: S_Body
+    400070: S_Galtling
+    400072: S_Gear_Left_Back
+    400074: S_Gear_Left_Front
+    400076: S_Gear_Right_Back
+    400078: S_Gear_Right_Front
+    400080: S_Gun
+    400082: S_Link
+    400084: S_Master
+    400086: S_Turret
+    400088: S_Wheel_Left_01
+    400090: S_Wheel_Left_06
+    400092: S_Wheel_Right_01
+    400094: S_Wheel_Right_06
+    400096: shadow
+    2300000: shadow
+    3300000: shadow
+    4300000: shadow
+    4300002: lefttrack
+    4300004: righttrack
+    4300006: leftwheel
+    4300008: rightwheel
+    4300010: attach
+    4300012: body
+    4300014: barrel_02
+    4300016: barrel_01
+    7400000: Take 001
+    9500000: //RootNode
+    13700000: attach
+    13700002: barrel_01
+    13700004: barrel_02
+    13700006: body
+    13700008: lefttrack
+    13700010: leftwheel
+    13700012: righttrack
+    13700014: rightwheel
+  materials:
+    importMaterials: 0
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importVisibility: 0
+    importBlendShapes: 0
+    importCameras: 0
+    importLights: 0
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 0
+    keepQuads: 0
+    weldVertices: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+  importAnimation: 0
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
