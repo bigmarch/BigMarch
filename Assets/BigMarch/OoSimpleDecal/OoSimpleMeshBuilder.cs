@@ -40,7 +40,8 @@ public class OoSimpleDecalMeshBuilder
 
 	// builder 是一个 mesh 数据的容器。
 	public void Build(
-		MeshFilter targetMeshFilter,
+		Matrix4x4 targetLocalToWorldMatrix,
+		Mesh targetMesh,
 		Plane right, Plane left,
 		Plane top, Plane bottom,
 		Plane front, Plane back,
@@ -76,9 +77,9 @@ public class OoSimpleDecalMeshBuilder
 		// TODO  在世界空间进行裁剪
 		//		Matrix4x4 objToDecalMakerMatrix = decalMakerTransform.worldToLocalMatrix * targetMeshFilter.transform.localToWorldMatrix;
 
-		Matrix4x4 objToWorldMatrix = targetMeshFilter.transform.localToWorldMatrix;
+		Matrix4x4 objToWorldMatrix = targetLocalToWorldMatrix;//targetMeshFilter.transform.localToWorldMatrix;
 
-		Mesh mesh = targetMeshFilter.sharedMesh;
+		Mesh mesh = targetMesh;
 
 //		Profiler.BeginSample("Mesh");
 

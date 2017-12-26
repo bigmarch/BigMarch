@@ -59,7 +59,6 @@ public class OoSimpleDecal : MonoBehaviour
 		_decalObj = new GameObject("Decal from [" + gameObject.name + "]");
 		_decalMeshFilter = _decalObj.AddComponent<MeshFilter>();
 		_decalMeshRenderer = _decalObj.AddComponent<MeshRenderer>();
-		_decalMeshRenderer.sharedMaterial = DecalMaterial;
 
 		_decalObj.hideFlags = HideFlags.HideAndDontSave;
 
@@ -105,6 +104,11 @@ public class OoSimpleDecal : MonoBehaviour
 		{
 			ReGenerateMesh();
 		}
+
+		if (_decalMeshRenderer != null)
+		{
+			_decalMeshRenderer.sharedMaterial = DecalMaterial;
+		}
 	}
 
 	[ContextMenu("Build Mesh")]
@@ -129,20 +133,34 @@ public class OoSimpleDecal : MonoBehaviour
 		{
 			if (TargetObjects[i])
 			{
+				Profiler.BeginSample("Build");
 				MeshFilter mf = TargetObjects[i].GetComponent<MeshFilter>();
+				SkinnedMeshRenderer smr = TargetObjects[i].GetComponent<SkinnedMeshRenderer>();
 				if (mf)
 				{
-					Profiler.BeginSample("Build");
 					_decalMeshBuilder.Build(
-						mf,
+						mf.transform.localToWorldMatrix,
+						mf.sharedMesh,
 						right, left,
 						top, bottom,
 						front, back,
 						UvArea,
 						PushDistance,
 						MaxClipAngle);
-					Profiler.EndSample();
 				}
+				else if (smr)
+				{
+					_decalMeshBuilder.Build(
+						smr.transform.localToWorldMatrix,
+						smr.sharedMesh,
+						right, left,
+						top, bottom,
+						front, back,
+						UvArea,
+						PushDistance,
+						MaxClipAngle);
+				}
+				Profiler.EndSample();
 			}
 		}
 
@@ -157,16 +175,8 @@ public class OoSimpleDecal : MonoBehaviour
 		Gizmos.DrawWireCube(Vector3.zero, Vector3.one);
 	}
 
-	private void OnValidate()
-	{
-		if(_decalMeshRenderer != null)
-		{
-			_decalMeshRenderer.sharedMaterial = DecalMaterial;
-		}
-	}
-
 	[ContextMenu("Create Decal Instance")]
-	private GameObject CreateDecalInstance()
+	public GameObject CreateDecalInstance()
 	{
 		GameObject decalInstanceGo = new GameObject("decal instance", typeof(MeshFilter), typeof(MeshRenderer));
 		decalInstanceGo.transform.position = transform.position;
