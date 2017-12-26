@@ -9,9 +9,9 @@ public class DecalItemSetEditor : Editor
 {
 	private const string DecalName = "[Decal]";
 	private const string DecalInstanceName = "[DecalInstance]";
-	private string _alreadyExistErrorLog = string.Format("目标物体下存在 {0} 或者 {1} ，需要先进行清空操作。", DecalName, DecalInstanceName);
-	private string _noDecalErrorLog = string.Format("目标物体下没有找到任何 {0}", DecalName);
-	private string _decalInstanceExist = string.Format("目标物体下不能存在 {0}", DecalInstanceName);
+	private readonly string _alreadyExistErrorLog = string.Format("目标物体下存在 {0} 或者 {1} ，需要先进行清空操作。", DecalName, DecalInstanceName);
+	private readonly string _noDecalErrorLog = string.Format("目标物体下没有找到任何 {0}", DecalName);
+	private readonly string _decalInstanceExist = string.Format("目标物体下不能存在 {0}", DecalInstanceName);
 
 	private Transform _root;
 	private Material _mat;
