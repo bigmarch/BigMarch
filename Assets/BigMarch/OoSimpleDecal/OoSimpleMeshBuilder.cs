@@ -49,6 +49,12 @@ public class OoSimpleDecalMeshBuilder
 		float pushDistance,
 		float maxClipAngle)
 	{
+		if (!targetMesh.isReadable)
+		{
+			Debug.LogError("目标 mesh 不是 readable，无法生成 decal。" + targetMesh.name);
+			return;
+		}
+
 		_rightPlane = right;
 		_leftPlane = left;
 		_topPlane = top;
