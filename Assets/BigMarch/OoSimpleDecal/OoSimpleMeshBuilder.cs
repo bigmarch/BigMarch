@@ -51,7 +51,7 @@ public class OoSimpleDecalMeshBuilder
 	{
 		if (!targetMesh.isReadable)
 		{
-			Debug.LogError("目标 mesh 不是 readable，无法生成 decal。" + targetMesh.name);
+			Debug.LogError("目标 mesh 不是 readable，无法生成 decal。mesh name : " + targetMesh.name);
 			return;
 		}
 

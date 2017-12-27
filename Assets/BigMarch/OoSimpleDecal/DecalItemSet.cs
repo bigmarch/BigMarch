@@ -14,9 +14,11 @@ public class DecalItemSet : ScriptableObject
 
 		// decal 和 decal instance 的 parent 的路径。
 		public string ParentPath;
-		public Vector3 LocalPosition;
-		public Vector3 LocalEulerAngle;
-		public Vector3 LocalScale;
+
+		// 以下三个 local 值，是在 root 下的 local 值。
+		public Vector3 LocalPositionInRoot;
+		public Vector3 LocalEulerAngleInRoot;
+		public Vector3 LocalScaleInRoot;
 
 		// 目标裁切的物体的路径。
 		public string TargetObjPath;

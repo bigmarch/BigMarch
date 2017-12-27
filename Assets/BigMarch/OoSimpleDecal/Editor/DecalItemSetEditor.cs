@@ -9,9 +9,11 @@ public class DecalItemSetEditor : Editor
 {
 	private const string DecalName = "[Decal]";
 	private const string DecalInstanceName = "[DecalInstance]";
-	private readonly string _alreadyExistErrorLog = string.Format("目标物体下存在 {0} 或者 {1} ，需要先进行清空操作。", DecalName, DecalInstanceName);
+	private const string NoParentDecalName = "[NoParentDecal]";
+	private const string NoParentDecalInstanceName = "[NoParentDecalInstance]";
+	private readonly string _alreadyExistErrorLog = string.Format("目标物体下存在 {0} {1} {2} {3} ，需要先进行清空操作。", DecalName, DecalInstanceName, NoParentDecalName, NoParentDecalInstanceName);
 	private readonly string _noDecalErrorLog = string.Format("目标物体下没有找到任何 {0}", DecalName);
-	private readonly string _decalInstanceExist = string.Format("目标物体下不能存在 {0}", DecalInstanceName);
+	private readonly string _decalInstanceExist = string.Format("目标物体下不能存在 {0} {1} {2}", DecalInstanceName, NoParentDecalName, NoParentDecalInstanceName);
 
 	private Transform _root;
 	private Material _mat;
@@ -38,7 +40,10 @@ public class DecalItemSetEditor : Editor
 		GUILayout.BeginHorizontal();
 		if (GUILayout.Button("生成\nDecal", GUILayout.Height(30)))
 		{
-			if (DecalExist(_root) || DecalInstanceExist(_root))
+			if (FindAllChild(_root, DecalName).Count != 0
+			    || FindAllChild(_root, DecalInstanceName).Count != 0
+			    || FindAllChild(_root, NoParentDecalName).Count != 0
+			    || FindAllChild(_root, NoParentDecalInstanceName).Count != 0)
 			{
 				EditorUtility.DisplayDialog("", _alreadyExistErrorLog, "好");
 				return;
@@ -47,17 +52,19 @@ public class DecalItemSetEditor : Editor
 		}
 		if (GUILayout.Button("保存\nDecalInstance", GUILayout.Height(30)))
 		{
-			if (DecalInstanceExist(_root))
+			if (FindAllChild(_root, DecalInstanceName).Count != 0
+			    || FindAllChild(_root, NoParentDecalName).Count != 0
+			    || FindAllChild(_root, NoParentDecalInstanceName).Count != 0)
 			{
 				EditorUtility.DisplayDialog("", _decalInstanceExist, "好");
 				return;
 			}
-			if (!DecalExist(_root))
+			if (FindAllChild(_root, DecalName).Count == 0)
 			{
 				EditorUtility.DisplayDialog("", _noDecalErrorLog, "好");
 				return;
 			}
-			string confirmText = string.Format("目标物体下存在{0}个{1}，是否覆盖保存？", DecalName, GetDecalCount(_root));
+			string confirmText = string.Format("目标物体下存在{0}个{1}，是否覆盖保存？", DecalName, FindAllChild(_root, DecalName).Count);
 			bool confirm = EditorUtility.DisplayDialog("是否保存", confirmText, "好", "不好");
 			if (confirm)
 			{
@@ -66,7 +73,10 @@ public class DecalItemSetEditor : Editor
 		}
 		if (GUILayout.Button("预览\nDecalInstance", GUILayout.Height(30)))
 		{
-			if (DecalExist(_root) || DecalInstanceExist(_root))
+			if (FindAllChild(_root, DecalName).Count != 0
+			    || FindAllChild(_root, DecalInstanceName).Count != 0
+			    || FindAllChild(_root, NoParentDecalName).Count != 0
+			    || FindAllChild(_root, NoParentDecalInstanceName).Count != 0)
 			{
 				EditorUtility.DisplayDialog("", _alreadyExistErrorLog, "好");
 				return;
@@ -158,10 +168,19 @@ public class DecalItemSetEditor : Editor
 			// 记录本次循环的 decal item。
 			DecalItemSet.DecalItem di = new DecalItemSet.DecalItem();
 			di.DecalInstancePrefab = decalInstancePrefab;
+
+			// parent 的 local 值
 			di.ParentPath = GetTransfomPath(_root, decal.transform.parent);
-			di.LocalPosition = decalObj.transform.localPosition;
-			di.LocalEulerAngle = decalObj.transform.localEulerAngles;
-			di.LocalScale = decalObj.transform.localScale;
+
+			// 放到 root 下面记录 local 值。
+			Transform cacheParent = decalObj.transform.parent;
+			decalObj.transform.parent = _root;
+			di.LocalPositionInRoot = decalObj.transform.localPosition;
+			di.LocalEulerAngleInRoot = decalObj.transform.localEulerAngles;
+			di.LocalScaleInRoot = decalObj.transform.localScale;
+
+			// 放到原本的 parent 下面。
+			decalObj.transform.parent = cacheParent;
 
 			di.TargetObjPath = GetTransfomPath(_root, decal.TargetObjects[0].transform);
 
@@ -196,26 +215,19 @@ public class DecalItemSetEditor : Editor
 		{
 			DestroyImmediate(go);
 		}
-	}
 
-	private bool DecalExist(Transform root)
-	{
-		List<GameObject> decalObj = FindAllChild(_root, DecalName);
-		return decalObj.Count != 0;
-	}
+		List<GameObject> noParentDecalList = FindAllChild(_root, NoParentDecalName);
+		foreach (GameObject go in noParentDecalList)
+		{
+			DestroyImmediate(go);
+		}
 
-	private bool DecalInstanceExist(Transform root)
-	{
-		List<GameObject> decalInstanceObj = FindAllChild(_root, DecalInstanceName);
-		return decalInstanceObj.Count != 0;
+		List<GameObject> noParentDecalInstanceList = FindAllChild(_root, NoParentDecalInstanceName);
+		foreach (GameObject go in noParentDecalInstanceList)
+		{
+			DestroyImmediate(go);
+		}
 	}
-
-	private int GetDecalCount(Transform root)
-	{
-		List<GameObject> decalObj = FindAllChild(_root, DecalName);
-		return decalObj.Count;
-	}
-
 
 	private static void SpawnDecalAt(Transform root, Material mat, DecalItemSet dis)
 	{
@@ -229,12 +241,23 @@ public class DecalItemSetEditor : Editor
 			decal.UvArea = decalItem.UvArea;
 			decal.PushDistance = decalItem.PushDistance;
 
-			decal.transform.parent = root.Find(decalItem.ParentPath);
-			decal.transform.localPosition = decalItem.LocalPosition;
-			decal.transform.localEulerAngles = decalItem.LocalEulerAngle;
-			decal.transform.localScale = decalItem.LocalScale;
+			// 先放到 root 下面，设置 local 值。
+			decal.transform.parent = root;
+			decal.transform.localPosition = decalItem.LocalPositionInRoot;
+			decal.transform.localEulerAngles = decalItem.LocalEulerAngleInRoot;
+			decal.transform.localScale = decalItem.LocalScaleInRoot;
 
-			decal.gameObject.name = DecalName;
+			// 设置正确的 panret
+			Transform targetParent = root.Find(decalItem.ParentPath);
+			if (targetParent)
+			{
+				decal.transform.parent = targetParent;
+				decal.gameObject.name = DecalName;
+			}
+			else
+			{
+				decal.gameObject.name = NoParentDecalName;
+			}
 
 			decal.DecalMaterial = mat;
 		}
@@ -252,12 +275,23 @@ public class DecalItemSetEditor : Editor
 			}
 			GameObject go = Instantiate(decalItem.DecalInstancePrefab);
 
-			go.transform.parent = root.Find(decalItem.ParentPath);
-			go.transform.localPosition = decalItem.LocalPosition;
-			go.transform.localEulerAngles = decalItem.LocalEulerAngle;
+			// 先放到 root 下面，设置 local 值。
+			go.transform.parent = root;
+			go.transform.localPosition = decalItem.LocalPositionInRoot;
+			go.transform.localEulerAngles = decalItem.LocalEulerAngleInRoot;
 			go.transform.localScale = Vector3.one;
 
-			go.name = DecalInstanceName;
+			// 设置正确的 panret
+			Transform targetParent = root.Find(decalItem.ParentPath);
+			if (targetParent)
+			{
+				go.transform.parent = targetParent;
+				go.name = DecalInstanceName;
+			}
+			else
+			{
+				go.name = NoParentDecalInstanceName;
+			}
 
 			go.GetComponent<MeshRenderer>().sharedMaterial = mat;
 		}
@@ -327,9 +361,9 @@ public class DecalItemSetEditor : Editor
 			DecalItemSet.DecalItem di = new DecalItemSet.DecalItem();
 			di.DecalInstancePrefab = null;
 			di.ParentPath = "";
-			di.LocalPosition = Vector3.zero;
-			di.LocalEulerAngle = Vector3.zero;
-			di.LocalScale = new Vector3(RectArr[i].width / RectArr[i].height, 1, 1);
+			di.LocalPositionInRoot = Vector3.zero;
+			di.LocalEulerAngleInRoot = Vector3.zero;
+			di.LocalScaleInRoot = new Vector3(RectArr[i].width / RectArr[i].height, 1, 1);
 
 			di.TargetObjPath = "";
 
