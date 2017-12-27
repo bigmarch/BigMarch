@@ -100,7 +100,7 @@ public class OoSimpleDecal : MonoBehaviour
 	// Update is called once per frame
 	void Update()
 	{
-		if (AutoUpdateMesh)
+		if (AutoUpdateMesh && transform.hasChanged)
 		{
 			ReGenerateMesh();
 		}
