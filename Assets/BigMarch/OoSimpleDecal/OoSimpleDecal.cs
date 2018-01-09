@@ -109,6 +109,8 @@ public class OoSimpleDecal : MonoBehaviour
 		{
 			_decalMeshRenderer.sharedMaterial = DecalMaterial;
 		}
+
+		transform.hasChanged = false;
 	}
 
 	[ContextMenu("Build Mesh")]
