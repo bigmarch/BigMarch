@@ -35,11 +35,6 @@ namespace BigMarch.Tool
 
 		#region component extension
 
-		public static RectTransform RectTransform(this Component cp)
-		{
-			return cp.transform as RectTransform;
-		}
-
 		public static float Remap(this float value, float from1, float to1, float from2, float to2)
 		{
 			return (value - from1) / (to1 - from1) * (to2 - from2) + from2;
@@ -47,7 +42,7 @@ namespace BigMarch.Tool
 
 		#endregion
 
-		#region Triangle
+		#region triangle
 
 		private static float TriangleArea(float v0x, float v0y, float v1x, float v1y, float v2x, float v2y)
 		{
@@ -119,6 +114,42 @@ namespace BigMarch.Tool
 			}
 
 			return false;
+		}
+
+		#endregion
+
+		#region input 
+
+		// 把一个 “单位圆空间” 内的点，变换到 “单位正方形” 空间内的点。
+		public static Vector2 CircleSpace2SquareSpace(Vector2 inCircle)
+		{
+			if (inCircle == Vector2.zero)
+			{
+				return Vector2.zero;
+			}
+			float angle = Vector2.Angle(inCircle, Vector2.right);
+			float centerToEdgeInSquare =
+				angle < 45 || angle > 135
+					? 1 / Mathf.Cos(angle * Mathf.Deg2Rad)
+					: 1 / Mathf.Sin(angle * Mathf.Deg2Rad);
+			centerToEdgeInSquare = Mathf.Abs(centerToEdgeInSquare);
+			return inCircle * centerToEdgeInSquare;
+		}
+
+		// 把一个 “单位正方形” 内的点，变换到 “单位圆空间” 空间内的点。
+		public static Vector2 SquareSpace2CircleSpace(Vector2 inSquare)
+		{
+			if (inSquare == Vector2.zero)
+			{
+				return Vector2.zero;
+			}
+			float angle = Vector2.Angle(inSquare, Vector2.right);
+			float centerToEdgeInSquare =
+				angle < 45 || angle > 135
+					? 1 / Mathf.Cos(angle * Mathf.Deg2Rad)
+					: 1 / Mathf.Sin(angle * Mathf.Deg2Rad);
+			centerToEdgeInSquare = Mathf.Abs(centerToEdgeInSquare);
+			return inSquare / centerToEdgeInSquare;
 		}
 
 		#endregion
