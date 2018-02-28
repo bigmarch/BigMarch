@@ -61,6 +61,8 @@ half4 frag(v2f_simple i ) : COLOR {
 	half4 source = tex2D(_SourceTex, correctUv);
 	half4 clip1 = tex2D(_ClipTex1, correctUv);
 	//return source;
+	//return clip1;
+	//return clip0;
 
 	// 把需要被clip掉的像素全变成纯黑。
 	// 如果clip>=1，那么返回纯黑色。如果为0，那么就是source的颜色。

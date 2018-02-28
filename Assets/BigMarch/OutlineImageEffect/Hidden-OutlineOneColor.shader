@@ -6,6 +6,9 @@ Shader "Hidden/OutlineOneColor" {
 }*/
 SubShader {
     Pass {
+		ZTest LEqual
+		ZWrite Off
+
         Fog { Mode Off }
 CGPROGRAM
 #pragma vertex vert

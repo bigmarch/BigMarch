@@ -6,9 +6,11 @@ Shader "Hidden/OutlineStretch" {
 
 CGINCLUDE
 	static const half curve7[7] = { 0.0205, 0.0855, 0.232, 0.324, 0.232, 0.0855, 0.0205 };  // gauss'ish blur weights
-	static const half curve5[5] = { 0.0205, 0.3175, 0.324, 0.3175, 0.0205 };  // gauss'ish blur weights
-	static const half curve3[3] = { 0.106, 0.788, 0.106 };  // gauss'ish blur weights
-ENDCG
+	//static const half curve5[5] = { 0.0205, 0.3175, 0.324, 0.3175, 0.0205 };  // gauss'ish blur weights
+	static const half curve5[5] = { 1, 1, 1, 1, 1};  // gauss'ish blur weights
+	//static const half curve3[3] = { 0.106, 0.788, 0.106 };  // gauss'ish blur weights
+	static const half curve3[3] = { 1,1,1 };  // gauss'ish blur weights
+	ENDCG
 
 SubShader {
 //∫·œÚ1œÒÀÿ¿≠…Ï
