@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class OutlineImageEffectTest : MonoBehaviour
+public class OutlineImageEffectMkIITest : MonoBehaviour
 {
 	public OutlineImageEffectMkII Outline;
 	public Renderer[] TargetSmr;
