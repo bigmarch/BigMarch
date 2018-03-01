@@ -31,7 +31,7 @@ public class WeChatStyleAgentExample : MonoBehaviour
 	{
 		Rect r0 = new Rect(Screen.width / 2 - 200, Screen.height / 2 - 25, 400, 50);
 		Rect r1 = new Rect(Screen.width / 2 - 200, Screen.height / 2 + 25, 400, 50);
-		Rect r2 = new Rect(Screen.width / 2 - 200, Screen.height / 2 + 75, 400, 50);
+		//Rect r2 = new Rect(Screen.width / 2 - 200, Screen.height / 2 + 75, 400, 50);
 
 		//If there is a microphone  
 		if (WeChatStyleAgent.Instance.CurrentState == WeChatStyleAgent.State.Disable)
