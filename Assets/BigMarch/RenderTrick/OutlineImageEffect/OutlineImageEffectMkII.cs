@@ -6,12 +6,13 @@ public class OutlineImageEffectMkII : MonoBehaviour
 {
 	public enum OutlineType
 	{
-		Overlay,
-		CullingOverlay,
-		Culling,
+		Always,
+		AppearPart,
+		AllPartButZTest,
+		VertexExpand,
 	}
 
-	public OutlineType CurrentOutlineType = OutlineType.Culling;
+	public OutlineType CurrentOutlineType = OutlineType.VertexExpand;
 
 	[Range(0, 1)] public float StretchDownSampleMul = .6f;
 
@@ -94,8 +95,6 @@ public class OutlineImageEffectMkII : MonoBehaviour
 	{
 	}
 
-	private RenderTexture _rt;
-
 	void OnPreRender()
 	{
 		if (!_working)
@@ -143,15 +142,19 @@ public class OutlineImageEffectMkII : MonoBehaviour
 		// 根据类型不同，设定不同的 buffer，over lay的话，不需要 depth rt，因为花在最近处。
 		switch (CurrentOutlineType)
 		{
-			case OutlineType.Overlay:
+			case OutlineType.Always:
 				_outLineCamera.SetTargetBuffers(blackRt.colorBuffer, blackRt.depthBuffer);
 				_outLineCamera.RenderWithShader(OneColorShader, "");
 				break;
-			case OutlineType.CullingOverlay:
+			case OutlineType.AppearPart:
 				_outLineCamera.SetTargetBuffers(blackRt.colorBuffer, depthRt.depthBuffer);
 				_outLineCamera.RenderWithShader(OneColorShader, "");
 				break;
-			case OutlineType.Culling:
+			case OutlineType.AllPartButZTest:
+				_outLineCamera.SetTargetBuffers(blackRt.colorBuffer, blackRt.depthBuffer);
+				_outLineCamera.RenderWithShader(OneColorShader, "");
+				break;
+			case OutlineType.VertexExpand:
 				_outLineCamera.SetTargetBuffers(blackRt.colorBuffer, depthRt.depthBuffer);
 				_outLineCamera.RenderWithShader(VertexOutlineShader, "");
 				Shader.SetGlobalInt("_OutlineTankStencil", 2);
@@ -163,7 +166,9 @@ public class OutlineImageEffectMkII : MonoBehaviour
 		// 第四步，还原target的layer。
 		SetLayer(AimTargetRenderers, _aimTargetCachedLayer);
 
-		if (CurrentOutlineType == OutlineType.Overlay || CurrentOutlineType == OutlineType.CullingOverlay)
+		if (CurrentOutlineType == OutlineType.Always
+		    || CurrentOutlineType == OutlineType.AppearPart
+		    || CurrentOutlineType == OutlineType.AllPartButZTest)
 		{
 			RenderTexture buffer0 = RenderTexture.GetTemporary(downWidth, downHeight, 0, RenderTextureFormat.Default);
 			buffer0.filterMode = FilterMode.Bilinear;
