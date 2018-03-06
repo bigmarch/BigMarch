@@ -30,10 +30,12 @@ public class OutlineImageEffectMkII : MonoBehaviour
 	public Shader OneColorShader;
 	public Shader StretchShader;
 	public Shader AddShader;
+	public Shader DepthShader;
 	public Shader VertexOutlineShader;
 
 	private Material _stretchMaterial;
 	private Material _addMaterial;
+	private Material _depthMaterial;
 
 	private Camera _mainCamera;
 	private Camera _outLineCamera;
@@ -51,6 +53,7 @@ public class OutlineImageEffectMkII : MonoBehaviour
 		OneColorShader = Shader.Find("Hidden/OutlineOneColor");
 		StretchShader = Shader.Find("Hidden/OutlineStretch");
 		AddShader = Shader.Find("Hidden/OutlineAddToScreen");
+		DepthShader = Shader.Find("Hidden/ViewDepthTexture");
 		VertexOutlineShader = Shader.Find("Hidden/VertexOutline");
 
 		_backUpFirstPostEffectSourceRenderTexture = GetComponent<BackUpFirstPostEffectSourceRenderTexture>();
@@ -79,12 +82,14 @@ public class OutlineImageEffectMkII : MonoBehaviour
 
 		_stretchMaterial = new Material(StretchShader);
 		_addMaterial = new Material(AddShader);
+		_depthMaterial = new Material(DepthShader);
 	}
 
 	void OnDisable()
 	{
 		Destroy(_stretchMaterial);
 		Destroy(_addMaterial);
+		Destroy(_depthMaterial);
 	}
 
 	void OnDestroy()
@@ -139,7 +144,7 @@ public class OutlineImageEffectMkII : MonoBehaviour
 		// 第二步，给outline这个layer拍一张照片。
 		_outLineCamera.cullingMask = 1 << OutlineLayer;
 
-		// 根据类型不同，设定不同的 buffer，over lay的话，不需要 depth rt，因为花在最近处。
+		// 根据类型不同，设定不同的 buffer，overlay 的话，不需要 depth rt，因为画在最近处。
 		switch (CurrentOutlineType)
 		{
 			case OutlineType.Always:
@@ -167,8 +172,7 @@ public class OutlineImageEffectMkII : MonoBehaviour
 		SetLayer(AimTargetRenderers, _aimTargetCachedLayer);
 
 		if (CurrentOutlineType == OutlineType.Always
-		    || CurrentOutlineType == OutlineType.AppearPart
-		    || CurrentOutlineType == OutlineType.AllPartButZTest)
+		    || CurrentOutlineType == OutlineType.AppearPart)
 		{
 			RenderTexture buffer0 = RenderTexture.GetTemporary(downWidth, downHeight, 0, RenderTextureFormat.Default);
 			buffer0.filterMode = FilterMode.Bilinear;
@@ -176,17 +180,17 @@ public class OutlineImageEffectMkII : MonoBehaviour
 			RenderTexture buffer1 = RenderTexture.GetTemporary(downWidth, downHeight, 0, RenderTextureFormat.Default);
 			buffer1.filterMode = FilterMode.Bilinear;
 
-			//横纵两个PASS拉伸
+			// 横纵两个PASS拉伸
 			Vector4 screenSize = new Vector4(1f * Width / downWidth, 1f * Width / downHeight, 0.0f, 0.0f);
 			_stretchMaterial.SetVector("_ScreenSize", screenSize);
 
-			//向下采样 + 上下左右拉伸。
+			// 向下采样 + 上下左右拉伸。
 			Graphics.Blit(blackRt, buffer0);
 			Graphics.Blit(buffer0, buffer1, _stretchMaterial, 0);
 			buffer0.DiscardContents();
 			Graphics.Blit(buffer1, buffer0, _stretchMaterial, 1);
 
-			//_rt中的白色部分，从stretch后的图中扣掉。
+			// _rt中的白色部分，从stretch后的图中扣掉。
 			_addMaterial.SetColor("_Color", CurrentLineColor);
 			_addMaterial.SetFloat("_ColorMul", LineColorMul);
 			_addMaterial.SetTexture("_ClipTex0", blackRt);
@@ -200,6 +204,11 @@ public class OutlineImageEffectMkII : MonoBehaviour
 			RenderTexture.ReleaseTemporary(buffer0);
 			RenderTexture.ReleaseTemporary(buffer1);
 			//		_outLineCamera.targetTexture = null;
+		}
+		else if (CurrentOutlineType == OutlineType.AllPartButZTest)
+		{			
+			_mainCamera.depthTextureMode = DepthTextureMode.Depth;
+			Graphics.Blit(depthRt, destination, _depthMaterial);
 		}
 		else
 		{
