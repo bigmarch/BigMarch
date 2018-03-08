@@ -14,10 +14,10 @@ Shader "Hidden/VertexOutline"
 
 			Stencil
 			{
-				Ref[_OutlineTankStencil]
-				Comp notequal
-				Pass zero
-				//ZFail keep
+				Ref[_StencilRef]
+				Comp[_StencilComp]
+				Pass[_StencilPass]
+				ZFail[_StencilZFail]
 			}
 
 			Tags{ "LightMode" = "ForwardBase" "Queue" = "Transparent" "IgnoreProjectors" = "True" "RenderType" = "Transparent" }

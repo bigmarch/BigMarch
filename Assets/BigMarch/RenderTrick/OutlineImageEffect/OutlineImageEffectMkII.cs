@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 [RequireComponent(typeof(Camera))]
 public class OutlineImageEffectMkII : MonoBehaviour
@@ -7,8 +8,8 @@ public class OutlineImageEffectMkII : MonoBehaviour
 	public enum OutlineType
 	{
 		Always,
-		AppearPart,
-		AllPartButZTest,
+		AppearPart0,
+		AppearPart1,
 		VertexExpand,
 	}
 
@@ -30,12 +31,10 @@ public class OutlineImageEffectMkII : MonoBehaviour
 	public Shader OneColorShader;
 	public Shader StretchShader;
 	public Shader AddShader;
-	public Shader DepthShader;
 	public Shader VertexOutlineShader;
 
 	private Material _stretchMaterial;
 	private Material _addMaterial;
-	private Material _depthMaterial;
 
 	private Camera _mainCamera;
 	private Camera _outLineCamera;
@@ -53,7 +52,6 @@ public class OutlineImageEffectMkII : MonoBehaviour
 		OneColorShader = Shader.Find("Hidden/OutlineOneColor");
 		StretchShader = Shader.Find("Hidden/OutlineStretch");
 		AddShader = Shader.Find("Hidden/OutlineAddToScreen");
-		DepthShader = Shader.Find("Hidden/ViewDepthTexture");
 		VertexOutlineShader = Shader.Find("Hidden/VertexOutline");
 
 		_backUpFirstPostEffectSourceRenderTexture = GetComponent<BackUpFirstPostEffectSourceRenderTexture>();
@@ -82,23 +80,21 @@ public class OutlineImageEffectMkII : MonoBehaviour
 
 		_stretchMaterial = new Material(StretchShader);
 		_addMaterial = new Material(AddShader);
-		_depthMaterial = new Material(DepthShader);
 	}
 
 	void OnDisable()
 	{
 		Destroy(_stretchMaterial);
 		Destroy(_addMaterial);
-		Destroy(_depthMaterial);
 	}
 
 	void OnDestroy()
 	{
 	}
 
-	private void Update()
-	{
-	}
+//	private void Update()
+//	{		
+//	}
 
 	void OnPreRender()
 	{
@@ -111,6 +107,23 @@ public class OutlineImageEffectMkII : MonoBehaviour
 		_outLineCamera.fieldOfView = _mainCamera.fieldOfView;
 		_outLineCamera.nearClipPlane = _mainCamera.nearClipPlane;
 		_outLineCamera.farClipPlane = _mainCamera.farClipPlane;
+
+		// 在这个地方，根据不同的 outline 类型，对 AimTargetRenderers 的 stencil 操作进行设置。
+		switch (CurrentOutlineType)
+		{
+			case OutlineType.Always:
+			case OutlineType.AppearPart0:
+				SetStencilProperty(AimTargetRenderers, 0, CompareFunction.Disabled);
+				break;
+			case OutlineType.AppearPart1:
+				SetStencilProperty(AimTargetRenderers, 2, CompareFunction.Always, StencilOp.Replace, StencilOp.Replace);
+				break;
+			case OutlineType.VertexExpand:
+				SetStencilProperty(AimTargetRenderers, 2, CompareFunction.Always, StencilOp.Replace);
+				break;
+			default:
+				throw new ArgumentOutOfRangeException();
+		}
 	}
 
 	public void OnRenderImage(RenderTexture source, RenderTexture destination)
@@ -126,17 +139,20 @@ public class OutlineImageEffectMkII : MonoBehaviour
 
 		RenderTexture depthRt = _backUpFirstPostEffectSourceRenderTexture.DepthRt;
 
-		RenderTexture blackRt = RenderTexture.GetTemporary(source.width, source.height, 0, source.format);
-		blackRt.filterMode = source.filterMode;
+		// overlayRt 是目标的剪影照片，这张照片中的目标，不会被遮挡。
+		RenderTexture overlayRt = RenderTexture.GetTemporary(source.width, source.height, 0, source.format);
+		overlayRt.filterMode = source.filterMode;
 
-		int downWidth = (int) (blackRt.width * StretchDownSampleMul);
-		int downHeight = (int) (blackRt.height * StretchDownSampleMul);
+		// culledAbleRt 是目标的剪影照片，这张照片中的目标，可能会被遮挡。
+		RenderTexture culledAbleRt = RenderTexture.GetTemporary(source.width, source.height, 0, source.format);
+		culledAbleRt.filterMode = source.filterMode;
+
+		int downWidth = (int) (overlayRt.width * StretchDownSampleMul);
+		int downHeight = (int) (overlayRt.height * StretchDownSampleMul);
 
 		// 清空 target rt
-		RenderTexture rt = RenderTexture.active;
-		RenderTexture.active = blackRt;
-		GL.Clear(false, true, Color.black);
-		RenderTexture.active = rt;
+		ClearRt(overlayRt);		
+		ClearRt(culledAbleRt);		
 
 		// 第一步，设置target的layer，设置成outline。
 		SetLayer(AimTargetRenderers, OutlineLayer);
@@ -148,21 +164,28 @@ public class OutlineImageEffectMkII : MonoBehaviour
 		switch (CurrentOutlineType)
 		{
 			case OutlineType.Always:
-				_outLineCamera.SetTargetBuffers(blackRt.colorBuffer, blackRt.depthBuffer);
+				_outLineCamera.SetTargetBuffers(overlayRt.colorBuffer, overlayRt.depthBuffer);
 				_outLineCamera.RenderWithShader(OneColorShader, "");
 				break;
-			case OutlineType.AppearPart:
-				_outLineCamera.SetTargetBuffers(blackRt.colorBuffer, depthRt.depthBuffer);
+			case OutlineType.AppearPart0:
+				_outLineCamera.SetTargetBuffers(culledAbleRt.colorBuffer, depthRt.depthBuffer);
 				_outLineCamera.RenderWithShader(OneColorShader, "");
 				break;
-			case OutlineType.AllPartButZTest:
-				_outLineCamera.SetTargetBuffers(blackRt.colorBuffer, blackRt.depthBuffer);
+			case OutlineType.AppearPart1:
+				_outLineCamera.SetTargetBuffers(culledAbleRt.colorBuffer, depthRt.depthBuffer);
+				_outLineCamera.RenderWithShader(OneColorShader, "");
+
+				_outLineCamera.SetTargetBuffers(overlayRt.colorBuffer, overlayRt.depthBuffer);
 				_outLineCamera.RenderWithShader(OneColorShader, "");
 				break;
 			case OutlineType.VertexExpand:
-				_outLineCamera.SetTargetBuffers(blackRt.colorBuffer, depthRt.depthBuffer);
+				// RenderWithShader 参数只能是 shader，那么如果需要在渲染时，更改 property 怎么办，详见：
+				// https://forum.unity.com/threads/set-shader-property-by-renderwithshader-oder-replacement.29747/
+				// 结论是，修改 renderer 上的 material 的 property 即可。
+				// 另外，对 stencil 相关的 property 进行操作，使用 sharedMaterial 即可，因为这些 property 不会被序列化，所以不会影响“source material”。
+				SetStencilProperty(AimTargetRenderers, 2, CompareFunction.NotEqual);
+				_outLineCamera.SetTargetBuffers(culledAbleRt.colorBuffer, depthRt.depthBuffer);
 				_outLineCamera.RenderWithShader(VertexOutlineShader, "");
-				Shader.SetGlobalInt("_OutlineTankStencil", 2);
 				break;
 			default:
 				throw new ArgumentOutOfRangeException();
@@ -172,7 +195,8 @@ public class OutlineImageEffectMkII : MonoBehaviour
 		SetLayer(AimTargetRenderers, _aimTargetCachedLayer);
 
 		if (CurrentOutlineType == OutlineType.Always
-		    || CurrentOutlineType == OutlineType.AppearPart)
+		    || CurrentOutlineType == OutlineType.AppearPart0
+			|| CurrentOutlineType == OutlineType.AppearPart1)
 		{
 			RenderTexture buffer0 = RenderTexture.GetTemporary(downWidth, downHeight, 0, RenderTextureFormat.Default);
 			buffer0.filterMode = FilterMode.Bilinear;
@@ -185,7 +209,16 @@ public class OutlineImageEffectMkII : MonoBehaviour
 			_stretchMaterial.SetVector("_ScreenSize", screenSize);
 
 			// 向下采样 + 上下左右拉伸。
-			Graphics.Blit(blackRt, buffer0);
+			if (CurrentOutlineType == OutlineType.Always)
+			{
+				Graphics.Blit(overlayRt, buffer0);
+			}
+			else if (CurrentOutlineType == OutlineType.AppearPart0
+			         || CurrentOutlineType == OutlineType.AppearPart1)
+			{
+				Graphics.Blit(culledAbleRt, buffer0);
+			}
+
 			Graphics.Blit(buffer0, buffer1, _stretchMaterial, 0);
 			buffer0.DiscardContents();
 			Graphics.Blit(buffer1, buffer0, _stretchMaterial, 1);
@@ -193,8 +226,16 @@ public class OutlineImageEffectMkII : MonoBehaviour
 			// _rt中的白色部分，从stretch后的图中扣掉。
 			_addMaterial.SetColor("_Color", CurrentLineColor);
 			_addMaterial.SetFloat("_ColorMul", LineColorMul);
-			_addMaterial.SetTexture("_ClipTex0", blackRt);
-			//		_addMaterial.SetTexture("_ClipTex1", clipRt);
+
+			if (CurrentOutlineType == OutlineType.Always
+			    || CurrentOutlineType == OutlineType.AppearPart1)
+			{
+				_addMaterial.SetTexture("_ClipTex0", overlayRt);
+			}
+			else if (CurrentOutlineType == OutlineType.AppearPart0)
+			{
+				_addMaterial.SetTexture("_ClipTex0", culledAbleRt);
+			}
 
 			_addMaterial.SetTexture("_SourceTex", buffer0);
 
@@ -205,21 +246,17 @@ public class OutlineImageEffectMkII : MonoBehaviour
 			RenderTexture.ReleaseTemporary(buffer1);
 			//		_outLineCamera.targetTexture = null;
 		}
-		else if (CurrentOutlineType == OutlineType.AllPartButZTest)
-		{			
-			_mainCamera.depthTextureMode = DepthTextureMode.Depth;
-			Graphics.Blit(depthRt, destination, _depthMaterial);
-		}
 		else
 		{
 			_addMaterial.SetColor("_Color", CurrentLineColor);
 			_addMaterial.SetFloat("_ColorMul", LineColorMul);
 			_addMaterial.SetTexture("_ClipTex0", null);
-			_addMaterial.SetTexture("_SourceTex", blackRt);
+			_addMaterial.SetTexture("_SourceTex", culledAbleRt);
 			Graphics.Blit(source, destination, _addMaterial);
 		}
 
-		RenderTexture.ReleaseTemporary(blackRt);
+		RenderTexture.ReleaseTemporary(overlayRt);
+		RenderTexture.ReleaseTemporary(culledAbleRt);
 	}
 
 	// direction 的含义： 0-前，1-侧面，2-后，
@@ -255,5 +292,33 @@ public class OutlineImageEffectMkII : MonoBehaviour
 				renderers[i].gameObject.layer = layer;
 			}
 		}
+	}
+
+	private static void SetStencilProperty(
+		Renderer[] renderers,
+		int stencilRef,
+		CompareFunction stencilComp,
+		StencilOp stencilPass = StencilOp.Keep,
+		StencilOp stencilZFail = StencilOp.Keep)
+	{
+		for (int i = 0; i < renderers.Length; i++)
+		{
+			if (renderers[i] != null)
+			{
+				renderers[i].sharedMaterial.SetInt("_StencilRef", stencilRef);
+				renderers[i].sharedMaterial.SetInt("_StencilComp", (int) stencilComp);
+				renderers[i].sharedMaterial.SetInt("_StencilPass", (int) stencilPass);
+				renderers[i].sharedMaterial.SetInt("_StencilZFail", (int) stencilZFail);
+			}
+		}
+	}
+
+	private static void ClearRt(RenderTexture rtToClear)
+	{
+		// 清空 target rt
+		RenderTexture rt = RenderTexture.active;
+		RenderTexture.active = rtToClear;
+		GL.Clear(true, true, Color.black);
+		RenderTexture.active = rt;
 	}
 }
