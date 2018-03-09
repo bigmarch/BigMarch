@@ -72,8 +72,8 @@ public class BlurByMaskImageEffect : MonoBehaviour
 
 	public void OnDisable()
 	{
-		Destroy(_blendMaterial);
-		Destroy(_blurMaterial);
+		DestroyImmediate(_blendMaterial);
+		DestroyImmediate(_blurMaterial);
 	}
 
 	public void OnRenderImage(RenderTexture source, RenderTexture destination)
