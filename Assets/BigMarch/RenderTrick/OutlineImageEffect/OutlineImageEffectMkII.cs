@@ -259,8 +259,7 @@ public class OutlineImageEffectMkII : MonoBehaviour
 		RenderTexture.ReleaseTemporary(culledAbleRt);
 	}
 
-	// direction 的含义： 0-前，1-侧面，2-后，
-	public void SetTarget(Renderer[] targetRenderer)
+	public void SetTargetRenderer(Renderer[] targetRenderer)
 	{
 		if (targetRenderer == null || targetRenderer.Length == 0 || targetRenderer[0] == null)
 		{
@@ -276,11 +275,10 @@ public class OutlineImageEffectMkII : MonoBehaviour
 		_working = true;
 	}
 
-	public void ClearTarget()
+	public void ClearTargetRenderer()
 	{
 		AimTargetRenderers = null;
 		_working = false;
-		enabled = false;
 	}
 
 	private static void SetLayer(Renderer[] renderers, int layer)

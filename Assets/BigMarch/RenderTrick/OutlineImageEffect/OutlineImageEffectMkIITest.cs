@@ -17,12 +17,12 @@ public class OutlineImageEffectMkIITest : MonoBehaviour
 	{
 		if (Input.GetKeyDown(KeyCode.Space))
 		{
-			Outline.SetTarget(TargetSmr);
+			Outline.SetTargetRenderer(TargetSmr);
 		}
 
 		if (Input.GetKeyDown(KeyCode.Escape))
 		{
-			Outline.SetTarget(null);
+			Outline.SetTargetRenderer(null);
 		}
 	}
 }
