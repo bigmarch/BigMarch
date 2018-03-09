@@ -7,8 +7,6 @@ public class FrameBlendImageEffectExample : MonoBehaviour
 	public int RealFps = 60;
 	public Transform MoveModel;
 
-	private float m_FPS = 0;
-
 	// Update is called once per frame
 	void Update()
 	{
