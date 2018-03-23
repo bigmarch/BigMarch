@@ -197,8 +197,8 @@ public class OoSimpleDecalMeshBuilder
 		float u = _leftPlane.GetDistanceToPoint(vertex) / _leftRightDistance;
 		float v = _bottomPlane.GetDistanceToPoint(vertex) / _topBottomDistance;
 
-		u = u.Remap(0, 1, _uvArea.xMin, _uvArea.xMax);
-		v = v.Remap(0, 1, _uvArea.yMin, _uvArea.yMax);
+		u = Remap(u, 0, 1, _uvArea.xMin, _uvArea.xMax);
+		v = Remap(v, 0, 1, _uvArea.yMin, _uvArea.yMax);
 		_texcoords0.Add(new Vector2(u, v));
 
 		// 这里的 uv，是源 mesh 的 uv0，在 decal mesh 中，存在 uv1 中。
@@ -233,5 +233,11 @@ public class OoSimpleDecalMeshBuilder
 		_texcoords0.Clear();
 		_texcoords1.Clear();
 		_indices.Clear();
+	}
+
+
+	public float Remap(float value, float from1, float to1, float from2, float to2)
+	{
+		return (value - from1) / (to1 - from1) * (to2 - from2) + from2;
 	}
 }
