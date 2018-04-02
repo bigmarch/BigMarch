@@ -218,5 +218,10 @@ public class OoSimpleDecal : MonoBehaviour
 
 		return decalInstanceGo;
 	}
+
+	private void OnValidate()
+	{
+		ReGenerateMesh();
+	}
 }
 
