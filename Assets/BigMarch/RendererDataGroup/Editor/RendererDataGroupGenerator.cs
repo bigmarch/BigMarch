@@ -71,4 +71,9 @@ public class RendererDataGroupGeneratorWindow : EditorWindow
 		}
 		return error;
 	}
+
+	private void OnSelectionChange()
+	{
+		Repaint();
+	}
 }
