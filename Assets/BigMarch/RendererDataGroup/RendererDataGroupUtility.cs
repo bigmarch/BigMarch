@@ -131,6 +131,7 @@ public class RendererDataGroupUtility
 			ApplyFloatProperty(mat, rd.FloatProperty);
 			ApplyColorProperty(mat, rd.ColorProperty);
 			ApplyTexturePropertyInEditor(mat, rd.TextureProperty, hdOrSd);
+			mat.shaderKeywords = rd.Keywords;
 
 			result.Add(rd.TargetRendererName, mat);
 		}
@@ -151,6 +152,7 @@ public class RendererDataGroupUtility
 			ApplyFloatProperty(mat, rd.FloatProperty);
 			ApplyColorProperty(mat, rd.ColorProperty);
 			yield return coroutineOwner.StartCoroutine(ApplyTexturePropertyInRuntime(mat, rd.TextureProperty, hdOrSd));
+			mat.shaderKeywords = rd.Keywords;
 
 			result.Add(rd.TargetRendererName, mat);
 		}
