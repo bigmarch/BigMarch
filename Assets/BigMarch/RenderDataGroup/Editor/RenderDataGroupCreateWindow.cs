@@ -4,16 +4,16 @@ using System.IO;
 using UnityEditor;
 using UnityEngine;
 
-public class RendererDataGroupGeneratorWindow : EditorWindow
+public class RendererDataGroupCreateWindow : EditorWindow
 {
 	private const string OutputFolderPath = "Assets/Tank/RendererData/";
 
 	// Add menu item named "My Window" to the Window menu
-	[MenuItem("Window/TankRendererDataGenerator")]
+	[MenuItem("Window/TankRenderCreateWindow")]
 	public static void ShowWindow()
 	{
 		//Show existing window instance. If one doesn't exist, make one.
-		RendererDataGroupGeneratorWindow w = GetWindow<RendererDataGroupGeneratorWindow>();
+		RendererDataGroupCreateWindow w = GetWindow<RendererDataGroupCreateWindow>();
 	}
 
 	void OnGUI()

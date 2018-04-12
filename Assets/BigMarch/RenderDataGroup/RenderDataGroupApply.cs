@@ -8,6 +8,7 @@ using UnityEditor;
 
 // 应用 render data 的数据。
 // 注意，以下代码并未做过测试，只是表达 RenderDataGroup 的思想，分为 editor 下和 runtime，在这里做备忘。
+// 根据不同项目的使用情况，需要对这个类里的逻辑进行修改。
 public static class RenderDataGroupApply
 {
 	#region
