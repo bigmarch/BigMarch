@@ -46,7 +46,7 @@ public class RendererDataGroupGeneratorWindow : EditorWindow
 						Directory.CreateDirectory(OutputFolderPath);
 					}
 
-					RendererDataGroupUtility.GenerateRendererDatas(Selection.objects, OutputFolderPath);
+					RenderDataGroupCreate.GenerateRendererDatas(Selection.objects, OutputFolderPath);
 				}
 			}
 		}

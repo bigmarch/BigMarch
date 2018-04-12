@@ -4,7 +4,7 @@ using System.IO;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Renderer Data Group.asset", menuName = "Renderer Data Group")]
-public class RendererDataGroup : ScriptableObject
+public class RenderDataGroup : ScriptableObject
 {
 	public List<RendererData> RendererDataArr;
 
@@ -184,7 +184,7 @@ public class RendererDataGroup : ScriptableObject
 	{
 		if (string.IsNullOrEmpty(name))
 		{
-			return "RendererDataGroup name 为空！";
+			return "RenderDataGroup name 为空！";
 		}
 
 		foreach (var rendererData in RendererDataArr)
