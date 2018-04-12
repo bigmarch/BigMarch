@@ -30,7 +30,7 @@ public class RendererDataGroupUtility
 		}
 	}
 
-	public static void GenerateRendererDataGroup(GameObject prefab, string folderPath)
+	private static void GenerateRendererDataGroup(GameObject prefab, string folderPath)
 	{
 #if UNITY_EDITOR
 
