@@ -62,6 +62,8 @@ public static class RenderDataGroupCreate
 		result.ShaderName = mat.shader.name;
 		result.Keywords = FilterKeyword(mat.shaderKeywords);
 
+#if UNITY_EDITOR
+
 		SerializedObject psSource = new SerializedObject(mat);
 		SerializedProperty properties = psSource.FindProperty("m_SavedProperties");
 		SerializedProperty texEnvs = properties.FindPropertyRelative("m_TexEnvs");
@@ -97,7 +99,7 @@ public static class RenderDataGroupCreate
 				result.ColorProperty.Add(new RenderDataGroup.ColorKeyValue(propertyName, c));
 			}
 		}
-
+#endif
 		return result;
 	}
 
