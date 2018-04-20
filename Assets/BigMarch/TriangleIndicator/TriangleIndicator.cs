@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[ExecuteInEditMode]
 [RequireComponent(typeof(MeshFilter))]
 [RequireComponent(typeof(MeshRenderer))]
 public class TriangleIndicator : MonoBehaviour
@@ -24,10 +25,10 @@ public class TriangleIndicator : MonoBehaviour
 		_mr = GetComponent<MeshRenderer>();
 	}
 
-	// Use this for initialization
-	void Start()
+	void OnEnable()
 	{
 		_mesh = new Mesh();
+		_mesh.hideFlags = HideFlags.DontSave;
 		_mesh.MarkDynamic();
 		_mf.mesh = _mesh;
 
@@ -36,6 +37,19 @@ public class TriangleIndicator : MonoBehaviour
 		_triangleArr = new int[3];
 
 		_mr.material = Mat;
+	}
+
+	void OnDisable()
+	{
+		if(_mesh)
+		{
+			DestroyImmediate(_mesh);
+		}
+
+		if (Mat)
+		{
+			DestroyImmediate(Mat);
+		}
 	}
 
 	// Update is called once per frame
