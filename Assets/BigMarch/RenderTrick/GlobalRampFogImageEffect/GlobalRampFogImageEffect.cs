@@ -2,7 +2,7 @@
 using System;
 using UnityEngine;
 
-//	[ExecuteInEditMode]
+[ExecuteInEditMode]
 [RequireComponent(typeof(Camera))]
 public class GlobalRampFogImageEffect : MonoBehaviour
 {
@@ -74,6 +74,7 @@ public class GlobalRampFogImageEffect : MonoBehaviour
 		_fogMaterial.SetTexture("_RampTexture", RampTexture);
 
 		_fogMaterial.SetTexture("_DepthTex", GetComponent<BackUpFirstPostEffectSourceRenderTexture>().DepthRt);
+
 		_fogMaterial.SetFloat("_Multiplier", Multiplier);
 
 		Graphics.Blit(source, destination, _fogMaterial);
