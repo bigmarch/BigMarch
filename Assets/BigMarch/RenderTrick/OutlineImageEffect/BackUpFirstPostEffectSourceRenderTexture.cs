@@ -53,10 +53,12 @@ public class BackUpFirstPostEffectSourceRenderTexture : MonoBehaviour
 		Debug.Log("Refresh BackUpFirstPostEffectSourceRenderTexture : " + Screen.width + "   " + Screen.height);
 
 		RenderTexture newColorRt = new RenderTexture(Screen.width, Screen.height, 0, RenderTextureFormat.Default);
+		newColorRt.filterMode = FilterMode.Point;
 		newColorRt.Create();
 		newColorRt.hideFlags = HideFlags.DontSave;
 
 		RenderTexture newDepthRt = new RenderTexture(Screen.width, Screen.height, 24, RenderTextureFormat.Depth);
+		newColorRt.filterMode = FilterMode.Point;
 		newDepthRt.Create();
 		newDepthRt.hideFlags = HideFlags.DontSave;
 

@@ -1,16 +1,25 @@
-﻿#pragma warning disable 3001, 3002, 3003, 3005, 3008, 3009, 3024
-using System;
+﻿using System;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 using UnityEngine;
 
 [ExecuteInEditMode]
 [RequireComponent(typeof(Camera))]
 public class GlobalRampFogImageEffect : MonoBehaviour
 {
-	public float Multiplier = 1;
-	public Texture RampTexture;
-	public Vector2 StartEnd = new Vector2(0, 50);
-	public Shader FogShader = null;
-	private Material _fogMaterial = null;
+	public Shader FogShader;
+	private Material _fogMaterial;
+
+	[Header("Distance Fog")] public bool DistanceFog = true;
+	public float DistanceFogMultiplier = 1;
+	public Texture DistanceRampTexture;
+	public Vector2 DistanceStartEnd = new Vector2(10, 40);
+
+	[Header("Height Fog")] public bool HeightFog = true;
+	public float HeightFogMultiplier = 1;
+	public Texture HeightRampTexture;
+	public Vector2 HeightStartEnd = new Vector2(10, 0);
 
 	void Awake()
 	{
@@ -20,6 +29,30 @@ public class GlobalRampFogImageEffect : MonoBehaviour
 	void OnEnable()
 	{
 		_fogMaterial = new Material(FogShader);
+
+		CheckRampTexture(DistanceRampTexture);
+		CheckRampTexture(HeightRampTexture);
+	}
+
+	private void CheckRampTexture(Texture t)
+	{
+#if UNITY_EDITOR
+		if (!t)
+		{
+			return;
+		}
+		string path = AssetDatabase.GetAssetPath(t);
+		TextureImporter ti = (TextureImporter) AssetImporter.GetAtPath(path);
+		if (ti.mipmapEnabled)
+		{
+			Debug.LogError("mipmap 必须关闭 " + path);
+		}
+
+		if (ti.filterMode == FilterMode.Point)
+		{
+			Debug.LogError("filterMode 建议别用 point " + path);
+		}
+#endif
 	}
 
 	void OnDisable()
@@ -29,7 +62,7 @@ public class GlobalRampFogImageEffect : MonoBehaviour
 
 	void OnRenderImage(RenderTexture source, RenderTexture destination)
 	{
-		/*Camera cam = GetComponent<Camera>();
+		Camera cam = GetComponent<Camera>();
 		Transform camtr = cam.transform;
 		float camNear = cam.nearClipPlane;
 		float camFar = cam.farClipPlane;
@@ -68,46 +101,68 @@ public class GlobalRampFogImageEffect : MonoBehaviour
 
 		var camPos = camtr.position;
 		_fogMaterial.SetMatrix("_FrustumCornersWS", frustumCorners);
-		_fogMaterial.SetVector("_CameraWS", camPos);*/
+		_fogMaterial.SetVector("_CameraWS", camPos);
 
-		_fogMaterial.SetVector("_DistanceParams", new Vector4(StartEnd.x, StartEnd.y, 0, 0));
-		_fogMaterial.SetTexture("_RampTexture", RampTexture);
+		_fogMaterial.SetVector("_DistanceParams",
+			new Vector4(DistanceStartEnd.x, DistanceStartEnd.y, HeightStartEnd.x, HeightStartEnd.y));
+
+		_fogMaterial.SetTexture("_RampTexture0", DistanceRampTexture);
+		_fogMaterial.SetTexture("_RampTexture1", HeightRampTexture);
 
 		_fogMaterial.SetTexture("_DepthTex", GetComponent<BackUpFirstPostEffectSourceRenderTexture>().DepthRt);
 
-		_fogMaterial.SetFloat("_Multiplier", Multiplier);
+		_fogMaterial.SetFloat("_DistanceFogMultiplier", DistanceFogMultiplier);
 
-		Graphics.Blit(source, destination, _fogMaterial);
-//		CustomGraphicsBlit(source, destination, _fogMaterial, 0);
+		_fogMaterial.SetFloat("_HeightFogMultiplier", HeightFogMultiplier);
+
+		if (DistanceFog)
+		{
+			_fogMaterial.EnableKeyword("_DISTANCE");
+		}
+		else
+		{
+			_fogMaterial.DisableKeyword("_DISTANCE");
+		}
+
+		if (HeightFog)
+		{
+			_fogMaterial.EnableKeyword("_HEIGHT");
+		}
+		else
+		{
+			_fogMaterial.DisableKeyword("_HEIGHT");
+		}
+
+		CustomGraphicsBlit(source, destination, _fogMaterial, 0);
 	}
 
-//	static void CustomGraphicsBlit(RenderTexture source, RenderTexture dest, Material fxMaterial, int passNr)
-//	{
-//		RenderTexture.active = dest;
-//
-//		fxMaterial.SetTexture("_MainTex", source);
-//
-//		GL.PushMatrix();
-//		GL.LoadOrtho();
-//
-//		fxMaterial.SetPass(passNr);
-//
-//		GL.Begin(GL.QUADS);
-//
-//		GL.MultiTexCoord2(0, 0.0f, 0.0f);
-//		GL.Vertex3(0.0f, 0.0f, 3.0f); // BL
-//
-//		GL.MultiTexCoord2(0, 1.0f, 0.0f);
-//		GL.Vertex3(1.0f, 0.0f, 2.0f); // BR
-//
-//		GL.MultiTexCoord2(0, 1.0f, 1.0f);
-//		GL.Vertex3(1.0f, 1.0f, 1.0f); // TR
-//
-//		GL.MultiTexCoord2(0, 0.0f, 1.0f);
-//		GL.Vertex3(0.0f, 1.0f, 0.0f); // TL
-//
-//		GL.End();
-//		GL.PopMatrix();
-//	}
+	static void CustomGraphicsBlit(RenderTexture source, RenderTexture dest, Material fxMaterial, int passNr)
+	{
+		RenderTexture.active = dest;
+
+		fxMaterial.SetTexture("_MainTex", source);
+
+		GL.PushMatrix();
+		GL.LoadOrtho();
+
+		fxMaterial.SetPass(passNr);
+
+		GL.Begin(GL.QUADS);
+
+		GL.MultiTexCoord2(0, 0.0f, 0.0f);
+		GL.Vertex3(0.0f, 0.0f, 3.0f); // BL
+
+		GL.MultiTexCoord2(0, 1.0f, 0.0f);
+		GL.Vertex3(1.0f, 0.0f, 2.0f); // BR
+
+		GL.MultiTexCoord2(0, 1.0f, 1.0f);
+		GL.Vertex3(1.0f, 1.0f, 1.0f); // TR
+
+		GL.MultiTexCoord2(0, 0.0f, 1.0f);
+		GL.Vertex3(0.0f, 1.0f, 0.0f); // TL
+
+		GL.End();
+		GL.PopMatrix();
+	}
 }
 
