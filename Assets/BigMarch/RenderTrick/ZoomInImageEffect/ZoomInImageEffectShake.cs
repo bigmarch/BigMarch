@@ -28,4 +28,10 @@ public class ZoomInImageEffectShake : MonoBehaviour
 	{
 		_effect.ZoomInFactor -= ShakeDelta;
 	}
+
+	public void Shake(Vector2 center)
+	{
+		_effect.ZoomInCenter = center;
+		Shake();
+	}
 }
