@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+guid: cf3066baadb116c4e9ffec83b9d524ef
+timeCreated: 1526986645
+licenseType: Free
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - ZoomInShader: {fileID: 4800000, guid: 2658e6229755ac548b3f71cb1a4980d8, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
