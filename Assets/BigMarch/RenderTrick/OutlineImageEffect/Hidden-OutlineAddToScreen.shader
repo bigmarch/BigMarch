@@ -65,14 +65,14 @@ half4 frag(v2f_simple i ) : COLOR {
 	//return clip1;
 	//return clip0;
 
-	// °ÑĞèÒª±»clipµôµÄÏñËØÈ«±ä³É´¿ºÚ¡£
-	// Èç¹ûclip>=1£¬ÄÇÃ´·µ»Ø´¿ºÚÉ«¡£Èç¹ûÎª0£¬ÄÇÃ´¾ÍÊÇsourceµÄÑÕÉ«¡£
+	// æŠŠéœ€è¦è¢«clipæ‰çš„åƒç´ å…¨å˜æˆçº¯é»‘ã€‚
+	// å¦‚æœclip>=1ï¼Œé‚£ä¹ˆè¿”å›çº¯é»‘è‰²ã€‚å¦‚æœä¸º0ï¼Œé‚£ä¹ˆå°±æ˜¯sourceçš„é¢œè‰²ã€‚
 	half clip = clip0.r;// +clip1.r;
 	half outline = lerp(source, half3(0, 0, 0), clip).r;
-	//return half4(result.rgb, 1);
+	//return half4(outline.rrr, 1);
 
-	// sourceColor¶ÔÓ¦else·ÖÖ§¡£
-	// °Ñ±ß¶ùµÄÑÕÉ«ºÍ±³¾°É«×ö»ìºÏ¡£
+	// sourceColorå¯¹åº”elseåˆ†æ”¯ã€‚
+	// æŠŠè¾¹å„¿çš„é¢œè‰²å’ŒèƒŒæ™¯è‰²åšæ··åˆã€‚
 	half lerpK = saturate(outline)*_Color.a*_ColorMul;
 	half4 color = half4(_Color.rgb, 1);
 	return lerp(mainColor, color, lerpK);	

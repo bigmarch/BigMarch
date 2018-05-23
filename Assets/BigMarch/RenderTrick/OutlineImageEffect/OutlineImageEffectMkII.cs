@@ -7,10 +7,12 @@ public class OutlineImageEffectMkII : MonoBehaviour
 {
 	public enum OutlineType
 	{
-		Always,
-		AppearPart0,
-		AppearPart1,
+		StretchAll,
+		StretchPart0,
+		StretchPart1,
 		VertexExpand,
+		ZoomInAll,
+		ZoomInPart,
 	}
 
 	public OutlineType CurrentOutlineType = OutlineType.VertexExpand;
@@ -18,6 +20,8 @@ public class OutlineImageEffectMkII : MonoBehaviour
 	[Range(0, 1)] public float StretchDownSampleMul = .6f;
 
 	[Range(1, 5)] public int Width = 1;
+	
+	[Range(0, 1)] public float ZoomInFactor = 0.95f;
 
 	public Color CurrentLineColor = new Color(1, 0, 0, 1);
 
@@ -32,8 +36,10 @@ public class OutlineImageEffectMkII : MonoBehaviour
 	public Shader StretchShader;
 	public Shader AddShader;
 	public Shader VertexOutlineShader;
+	public Shader ZoomInShader;
 
 	private Material _stretchMaterial;
+	private Material _zoomInMaterial;
 	private Material _addMaterial;
 
 	private Camera _mainCamera;
@@ -53,6 +59,7 @@ public class OutlineImageEffectMkII : MonoBehaviour
 		StretchShader = Shader.Find("Hidden/OutlineStretch");
 		AddShader = Shader.Find("Hidden/OutlineAddToScreen");
 		VertexOutlineShader = Shader.Find("Hidden/VertexOutline");
+		ZoomInShader = Shader.Find("Hidden/ZoomIn");
 
 		_backUpFirstPostEffectSourceRenderTexture = GetComponent<BackUpFirstPostEffectSourceRenderTexture>();
 		if (!_backUpFirstPostEffectSourceRenderTexture)
@@ -80,12 +87,14 @@ public class OutlineImageEffectMkII : MonoBehaviour
 
 		_stretchMaterial = new Material(StretchShader);
 		_addMaterial = new Material(AddShader);
+		_zoomInMaterial = new Material(ZoomInShader);
 	}
 
 	void OnDisable()
 	{
 		Destroy(_stretchMaterial);
 		Destroy(_addMaterial);
+		Destroy(_zoomInMaterial);
 	}
 
 	void OnDestroy()
@@ -109,14 +118,15 @@ public class OutlineImageEffectMkII : MonoBehaviour
 		_outLineCamera.farClipPlane = _mainCamera.farClipPlane;
 
 		// 在这个地方，根据不同的 outline 类型，对 AimTargetRenderers 的 stencil 操作进行设置。
+		// PreRender 里设置好之后，摄像机的正常渲染会把 stencil 值写入到 buffer 中。
 		switch (CurrentOutlineType)
 		{
-			case OutlineType.Always:
-			case OutlineType.AppearPart0:
+			case OutlineType.StretchAll:
+			case OutlineType.StretchPart0:
+			case OutlineType.StretchPart1:
+			case OutlineType.ZoomInAll:
+			case OutlineType.ZoomInPart:
 				SetStencilProperty(AimTargetRenderers, 0, CompareFunction.Disabled);
-				break;
-			case OutlineType.AppearPart1:
-				SetStencilProperty(AimTargetRenderers, 2, CompareFunction.Always, StencilOp.Replace, StencilOp.Replace);
 				break;
 			case OutlineType.VertexExpand:
 				SetStencilProperty(AimTargetRenderers, 2, CompareFunction.Always, StencilOp.Replace);
@@ -163,30 +173,52 @@ public class OutlineImageEffectMkII : MonoBehaviour
 		// 根据类型不同，设定不同的 buffer，overlay 的话，不需要 depth rt，因为画在最近处。
 		switch (CurrentOutlineType)
 		{
-			case OutlineType.Always:
+			case OutlineType.StretchAll:
+			{
 				_outLineCamera.SetTargetBuffers(overlayRt.colorBuffer, overlayRt.depthBuffer);
 				_outLineCamera.RenderWithShader(OneColorShader, "");
 				break;
-			case OutlineType.AppearPart0:
+			}
+			case OutlineType.StretchPart0:
+			{
 				_outLineCamera.SetTargetBuffers(culledAbleRt.colorBuffer, depthRt.depthBuffer);
 				_outLineCamera.RenderWithShader(OneColorShader, "");
 				break;
-			case OutlineType.AppearPart1:
+			}
+			case OutlineType.StretchPart1:
+			{
 				_outLineCamera.SetTargetBuffers(culledAbleRt.colorBuffer, depthRt.depthBuffer);
 				_outLineCamera.RenderWithShader(OneColorShader, "");
 
 				_outLineCamera.SetTargetBuffers(overlayRt.colorBuffer, overlayRt.depthBuffer);
 				_outLineCamera.RenderWithShader(OneColorShader, "");
+
 				break;
+			}
 			case OutlineType.VertexExpand:
+			{
 				// RenderWithShader 参数只能是 shader，那么如果需要在渲染时，更改 property 怎么办，详见：
 				// https://forum.unity.com/threads/set-shader-property-by-renderwithshader-oder-replacement.29747/
 				// 结论是，修改 renderer 上的 material 的 property 即可。
 				// 另外，对 stencil 相关的 property 进行操作，使用 sharedMaterial 即可，因为这些 property 不会被序列化，所以不会影响“source material”。
 				SetStencilProperty(AimTargetRenderers, 2, CompareFunction.NotEqual);
+
 				_outLineCamera.SetTargetBuffers(culledAbleRt.colorBuffer, depthRt.depthBuffer);
 				_outLineCamera.RenderWithShader(VertexOutlineShader, "");
 				break;
+			}
+			case OutlineType.ZoomInAll:
+			{
+				_outLineCamera.SetTargetBuffers(overlayRt.colorBuffer, overlayRt.depthBuffer);
+				_outLineCamera.RenderWithShader(OneColorShader, "");
+				break;
+			}
+			case OutlineType.ZoomInPart:
+			{
+				_outLineCamera.SetTargetBuffers(culledAbleRt.colorBuffer, depthRt.depthBuffer);
+				_outLineCamera.RenderWithShader(OneColorShader, "");
+				break;
+			}
 			default:
 				throw new ArgumentOutOfRangeException();
 		}
@@ -194,9 +226,9 @@ public class OutlineImageEffectMkII : MonoBehaviour
 		// 第四步，还原target的layer。
 		SetLayer(AimTargetRenderers, _aimTargetCachedLayer);
 
-		if (CurrentOutlineType == OutlineType.Always
-		    || CurrentOutlineType == OutlineType.AppearPart0
-			|| CurrentOutlineType == OutlineType.AppearPart1)
+		if (CurrentOutlineType == OutlineType.StretchAll
+		    || CurrentOutlineType == OutlineType.StretchPart0
+		    || CurrentOutlineType == OutlineType.StretchPart1)
 		{
 			RenderTexture buffer0 = RenderTexture.GetTemporary(downWidth, downHeight, 0, RenderTextureFormat.Default);
 			buffer0.filterMode = FilterMode.Bilinear;
@@ -209,12 +241,12 @@ public class OutlineImageEffectMkII : MonoBehaviour
 			_stretchMaterial.SetVector("_ScreenSize", screenSize);
 
 			// 向下采样 + 上下左右拉伸。
-			if (CurrentOutlineType == OutlineType.Always)
+			if (CurrentOutlineType == OutlineType.StretchAll)
 			{
 				Graphics.Blit(overlayRt, buffer0);
 			}
-			else if (CurrentOutlineType == OutlineType.AppearPart0
-			         || CurrentOutlineType == OutlineType.AppearPart1)
+			else if (CurrentOutlineType == OutlineType.StretchPart0
+			         || CurrentOutlineType == OutlineType.StretchPart1)
 			{
 				Graphics.Blit(culledAbleRt, buffer0);
 			}
@@ -227,12 +259,12 @@ public class OutlineImageEffectMkII : MonoBehaviour
 			_addMaterial.SetColor("_Color", CurrentLineColor);
 			_addMaterial.SetFloat("_ColorMul", LineColorMul);
 
-			if (CurrentOutlineType == OutlineType.Always
-			    || CurrentOutlineType == OutlineType.AppearPart1)
+			if (CurrentOutlineType == OutlineType.StretchAll
+			    || CurrentOutlineType == OutlineType.StretchPart1)
 			{
 				_addMaterial.SetTexture("_ClipTex0", overlayRt);
 			}
-			else if (CurrentOutlineType == OutlineType.AppearPart0)
+			else if (CurrentOutlineType == OutlineType.StretchPart0)
 			{
 				_addMaterial.SetTexture("_ClipTex0", culledAbleRt);
 			}
@@ -245,6 +277,58 @@ public class OutlineImageEffectMkII : MonoBehaviour
 			RenderTexture.ReleaseTemporary(buffer0);
 			RenderTexture.ReleaseTemporary(buffer1);
 			//		_outLineCamera.targetTexture = null;
+		}
+		else if (CurrentOutlineType == OutlineType.ZoomInAll
+		         || CurrentOutlineType == OutlineType.ZoomInPart)
+		{	
+			RenderTexture buffer0 = RenderTexture.GetTemporary(downWidth, downHeight, 0, RenderTextureFormat.Default);
+			buffer0.filterMode = FilterMode.Bilinear;
+
+			RenderTexture buffer1 = RenderTexture.GetTemporary(downWidth, downHeight, 0, RenderTextureFormat.Default);
+			buffer1.filterMode = FilterMode.Bilinear;
+
+			// 向下采样 + 定点放大。
+			if (CurrentOutlineType == OutlineType.ZoomInAll)
+			{
+				Graphics.Blit(overlayRt, buffer0);
+			}
+			else if (CurrentOutlineType == OutlineType.ZoomInPart)
+			{
+				Graphics.Blit(culledAbleRt, buffer0);
+			}
+
+			// 求所有 renderer 的中心点
+			Bounds b = AimTargetRenderers[0].bounds;
+			for (int i = 0; i < AimTargetRenderers.Length; i++)
+			{
+				b.Encapsulate(AimTargetRenderers[i].bounds);
+			}
+			Vector3 viewPos = _mainCamera.WorldToViewportPoint(b.center);
+			_zoomInMaterial.SetVector("_ZoomInCenter", viewPos);		
+			_zoomInMaterial.SetFloat("_ZoomInFactor", ZoomInFactor);
+			
+			Graphics.Blit(buffer0, buffer1, _zoomInMaterial);
+					
+			// _rt中的白色部分，从stretch后的图中扣掉。
+			_addMaterial.SetColor("_Color", CurrentLineColor);
+			_addMaterial.SetFloat("_ColorMul", LineColorMul);
+
+			if (CurrentOutlineType == OutlineType.ZoomInAll)
+			{
+				_addMaterial.SetTexture("_ClipTex0", overlayRt);
+			}
+			else if (CurrentOutlineType == OutlineType.ZoomInPart)
+			{
+				_addMaterial.SetTexture("_ClipTex0", culledAbleRt);
+			}
+
+			_addMaterial.SetTexture("_SourceTex", buffer1);
+
+			Graphics.Blit(source, destination, _addMaterial);
+
+			//		RenderTexture.ReleaseTemporary(clipRt);
+			RenderTexture.ReleaseTemporary(buffer0);
+			RenderTexture.ReleaseTemporary(buffer1);
 		}
 		else
 		{
