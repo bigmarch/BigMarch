@@ -45,6 +45,7 @@ public class BlurByMaskImageEffect : MonoBehaviour
 	public BlendModeType BlendMode = BlendModeType.UseMaskTexture;
 
 	[Header("  --UseMaskTexture")] public Texture MaskTexture;
+	public Vector2 MaskOffset;
 
 	[Header("  --Caculate")] public float BlurStrength = 0;
 	public float NoBlurRadius = .16f;
@@ -140,6 +141,7 @@ public class BlurByMaskImageEffect : MonoBehaviour
 				_blendMaterial.EnableKeyword("_BLEND_MASK_TEXTURE");
 
 				_blendMaterial.SetTexture("_Mask", MaskTexture);
+				_blendMaterial.SetVector("_MaskOffset", MaskOffset);
 				break;
 			case BlendModeType.Caculate:
 				_blendMaterial.EnableKeyword("_BLEND_CACULATE");

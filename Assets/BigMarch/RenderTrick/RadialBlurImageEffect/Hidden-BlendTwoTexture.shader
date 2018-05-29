@@ -10,7 +10,7 @@
 
 		// 使用 mask texture 的时候，该属性有用。
 		_Mask ("Mask", RECT) = "black" {}
-
+        _MaskOffset("MaskOffset", Vector) = (0,0,0,0)
 		// 使用 caculate 的时候，该属性有用。
 		_BlendStrength ("BlendStrength", Float) = 0.5
 		_BlendCenter("BlendCenter", Vector) = (0.5, 0.5, 0)
@@ -38,6 +38,7 @@
 			uniform sampler2D _BlendTex;
 			uniform half _LerpK;
 			uniform sampler2D _Mask;
+			uniform half4 _MaskOffset;
 			
 			uniform half _BlendStrength;
 			uniform half3 _BlendCenter;
@@ -53,7 +54,7 @@
 				half2 dir = _BlendCenter.xy - i.uv;
 
 #ifdef _BLEND_MASK_TEXTURE
-				half t = tex2D(_Mask, i.uv).r;  
+				half t = tex2D(_Mask, i.uv+_MaskOffset.xy).r;  
 #elif _BLEND_LERPK
 				half t = _LerpK;
 #elif _BLEND_CACULATE
