@@ -44,7 +44,9 @@ public class BlurByMaskImageEffect : MonoBehaviour
 	public Color ColorMultiplier = Color.white;
 	public BlendModeType BlendMode = BlendModeType.UseMaskTexture;
 
-	[Header("  --UseMaskTexture")] public Texture MaskTexture;
+	[Header("  --UseMaskTexture")] public Texture MaskTexture0;
+	public Texture MaskTexture1;
+	[Range(0, 1)] public float MaskBlendK;
 	public Vector2 MaskOffset;
 
 	[Header("  --Caculate")] public float BlurStrength = 0;
@@ -140,7 +142,9 @@ public class BlurByMaskImageEffect : MonoBehaviour
 			case BlendModeType.UseMaskTexture:
 				_blendMaterial.EnableKeyword("_BLEND_MASK_TEXTURE");
 
-				_blendMaterial.SetTexture("_Mask", MaskTexture);
+				_blendMaterial.SetTexture("_Mask0", MaskTexture0);
+				_blendMaterial.SetTexture("_Mask1", MaskTexture1);
+				_blendMaterial.SetFloat("_MaskBlendK", MaskBlendK);
 				_blendMaterial.SetVector("_MaskOffset", MaskOffset);
 				break;
 			case BlendModeType.Caculate:

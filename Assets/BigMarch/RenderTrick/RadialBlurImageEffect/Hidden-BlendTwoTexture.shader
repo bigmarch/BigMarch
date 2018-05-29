@@ -37,8 +37,10 @@
 			uniform sampler2D _MainTex;
 			uniform sampler2D _BlendTex;
 			uniform half _LerpK;
-			uniform sampler2D _Mask;
+			uniform sampler2D _Mask0;
+			uniform sampler2D _Mask1;
 			uniform half4 _MaskOffset;
+			uniform half _MaskBlendK;
 			
 			uniform half _BlendStrength;
 			uniform half3 _BlendCenter;
@@ -54,7 +56,10 @@
 				half2 dir = _BlendCenter.xy - i.uv;
 
 #ifdef _BLEND_MASK_TEXTURE
-				half t = tex2D(_Mask, i.uv+_MaskOffset.xy).r;  
+                half2 uv = i.uv+_MaskOffset.xy;
+				half t0 = tex2D(_Mask0,uv ).r;  
+				half t1 = tex2D(_Mask1, uv).r;
+				half t = lerp(t0, t1, _MaskBlendK);  
 #elif _BLEND_LERPK
 				half t = _LerpK;
 #elif _BLEND_CACULATE
