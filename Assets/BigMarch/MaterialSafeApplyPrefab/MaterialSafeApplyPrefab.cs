@@ -20,11 +20,18 @@ public class MaterialSafeApplyPrefabWindow : EditorWindow
 
 	private void OnGUI()
 	{
-		if (GUILayout.Button("Safe Apply"))
+		GUILayout.BeginHorizontal();
+		if (GUILayout.Button("Apply"))
 		{
-			Apply();
+			Apply(false);
 		}
 
+		if (GUILayout.Button("Safe Apply"))
+		{
+			Apply(true);
+		}
+		GUILayout.EndHorizontal();
+		
 		GUILayout.Label("当前选中的可以 Apply 的 Object :\n ");
 
 		foreach (KeyValuePair<GameObject, GameObject> pair in _dic)
@@ -69,19 +76,26 @@ public class MaterialSafeApplyPrefabWindow : EditorWindow
 	}
 
 
-	private void Apply()
+	private void Apply(bool materialSafe)
 	{
 		foreach (KeyValuePair<GameObject, GameObject> pair in _dic)
 		{
-			// 从 prefab 上往 game object 上拷贝 material。
-			string error = CopyAllMaterial(pair.Value, pair.Key);
-			if (error != "")
+			if (materialSafe)
 			{
-				EditorUtility.DisplayDialog("error", error, "ok");
+				// 从 prefab 上往 game object 上拷贝 material。
+				string error = CopyAllMaterial(pair.Value, pair.Key);
+				if (error != "")
+				{
+					EditorUtility.DisplayDialog("error", error, "ok");
+				}
+				else
+				{
+					// 进行 apply
+					PrefabUtility.ReplacePrefab(pair.Key, pair.Value, ReplacePrefabOptions.ConnectToPrefab);
+				}
 			}
 			else
 			{
-				// 进行 apply
 				PrefabUtility.ReplacePrefab(pair.Key, pair.Value, ReplacePrefabOptions.ConnectToPrefab);
 			}
 		}
