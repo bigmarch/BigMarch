@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace BigMarch.Tool
 {
-	public static class Tool
+	public static class Utility
 	{
 		public static void GetPointOnEllipse(out float x, out float y, float rightRadiusInRadian, float forwardRadiusInRadian,
 			float angle)
@@ -127,6 +127,7 @@ namespace BigMarch.Tool
 			{
 				return Vector2.zero;
 			}
+
 			float angle = Vector2.Angle(inCircle, Vector2.right);
 			float centerToEdgeInSquare =
 				angle < 45 || angle > 135
@@ -143,6 +144,7 @@ namespace BigMarch.Tool
 			{
 				return Vector2.zero;
 			}
+
 			float angle = Vector2.Angle(inSquare, Vector2.right);
 			float centerToEdgeInSquare =
 				angle < 45 || angle > 135
@@ -153,5 +155,19 @@ namespace BigMarch.Tool
 		}
 
 		#endregion
+
+
+		public static float GetAnimationClipLength(RuntimeAnimatorController c, string clipName)
+		{
+			for (int i = 0; i < c.animationClips.Length; i++)
+			{
+				if (c.animationClips[i].name == clipName)
+				{
+					return c.animationClips[i].length;
+				}
+			}
+
+			return -1;
+		}
 	}
 }

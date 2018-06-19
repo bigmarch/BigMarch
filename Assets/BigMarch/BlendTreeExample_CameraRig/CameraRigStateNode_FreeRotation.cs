@@ -45,7 +45,7 @@ public class CameraRigStateNode_FreeRotation : Node
 	public override BlendData GetResult()
 	{
 		Vector3 position;
-		Tool.GetPointOnEllipsoid(out position, Extents, Angle.x * Mathf.Deg2Rad, Angle.y * Mathf.Deg2Rad);
+		Utility.GetPointOnEllipsoid(out position, Extents, Angle.x * Mathf.Deg2Rad, Angle.y * Mathf.Deg2Rad);
 
 		_cached.LocalPosition = position;
 
