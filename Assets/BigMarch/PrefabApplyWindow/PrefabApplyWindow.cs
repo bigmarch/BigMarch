@@ -5,13 +5,13 @@ using System.Runtime.InteropServices;
 using UnityEditor;
 using UnityEngine;
 
-public class MaterialSafeApplyPrefabWindow : EditorWindow
+public class PrefabApplyWindow : EditorWindow
 {
-	[MenuItem("BigMarch/Material Safe Apply Prefab Window")]
+	[MenuItem("BigMarch/Prefab Apply Window")]
 	public static void ShowMaterialSafeApplyPrefabWindow()
 	{
-		MaterialSafeApplyPrefabWindow window =
-			(MaterialSafeApplyPrefabWindow) GetWindow(typeof(MaterialSafeApplyPrefabWindow));
+		PrefabApplyWindow window =
+			(PrefabApplyWindow) GetWindow(typeof(PrefabApplyWindow));
 		window.Show();
 	}
 
@@ -20,10 +20,18 @@ public class MaterialSafeApplyPrefabWindow : EditorWindow
 
 	private void OnGUI()
 	{
-		if (GUILayout.Button("Safe Apply"))
+		GUILayout.BeginHorizontal();
+		if (GUILayout.Button("Apply"))
 		{
-			Apply();
+			Apply(false);
 		}
+
+		if (GUILayout.Button("Material Safe Apply"))
+		{
+			Apply(true);
+		}
+
+		GUILayout.EndHorizontal();
 
 		GUILayout.Label("当前选中的可以 Apply 的 Object :\n ");
 
@@ -41,6 +49,11 @@ public class MaterialSafeApplyPrefabWindow : EditorWindow
 
 			GUILayout.EndHorizontal();
 		}
+	}
+
+	private void OnEnable()
+	{
+		OnSelectionChange();
 	}
 
 	private void OnSelectionChange()
@@ -69,19 +82,26 @@ public class MaterialSafeApplyPrefabWindow : EditorWindow
 	}
 
 
-	private void Apply()
+	private void Apply(bool materialSafe)
 	{
 		foreach (KeyValuePair<GameObject, GameObject> pair in _dic)
 		{
-			// 从 prefab 上往 game object 上拷贝 material。
-			string error = CopyAllMaterial(pair.Value, pair.Key);
-			if (error != "")
+			if (materialSafe)
 			{
-				EditorUtility.DisplayDialog("error", error, "ok");
+				// 从 prefab 上往 game object 上拷贝 material。
+				string error = CopyAllMaterial(pair.Value, pair.Key);
+				if (error != "")
+				{
+					EditorUtility.DisplayDialog("error", error, "ok");
+				}
+				else
+				{
+					// 进行 apply
+					PrefabUtility.ReplacePrefab(pair.Key, pair.Value, ReplacePrefabOptions.ConnectToPrefab);
+				}
 			}
 			else
 			{
-				// 进行 apply
 				PrefabUtility.ReplacePrefab(pair.Key, pair.Value, ReplacePrefabOptions.ConnectToPrefab);
 			}
 		}
