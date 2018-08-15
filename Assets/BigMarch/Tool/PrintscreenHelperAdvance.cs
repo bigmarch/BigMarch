@@ -115,7 +115,7 @@ public class PrintscreenHelperAdvance : EditorWindow
     {
         RenderTexture prev = RenderTexture.active;
         RenderTexture.active = rt;
-        Texture2D png = new Texture2D(rt.width, rt.height, TextureFormat.ARGB32, false);
+        Texture2D png = new Texture2D(rt.width, rt.height, TextureFormat.RGB24, false);
         png.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
         byte[] bytes = png.EncodeToPNG();
         FileStream file = File.Open(path, FileMode.Create);
