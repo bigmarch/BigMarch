@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
-
+	
 [CreateAssetMenu]
 //一个tank对应一个tank decal config。
 public class DecalItemSet : ScriptableObject

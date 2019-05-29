@@ -116,6 +116,11 @@ public class OoSimpleDecal : MonoBehaviour
 	[ContextMenu("Build Mesh")]
 	public void ReGenerateMesh()
 	{
+		if (TargetObjects == null)
+		{
+			return;
+		}
+		
 		// 世界空间的6个 clip plane。right 就是 transform.right 方向的那个 Plane。
 		Plane right = new Plane(-transform.right, transform.position + transform.right * .5f * transform.lossyScale.x);
 		Plane left = new Plane(transform.right, transform.position - transform.right * .5f * transform.lossyScale.x);
@@ -167,7 +172,10 @@ public class OoSimpleDecal : MonoBehaviour
 		}
 
 		Profiler.BeginSample("FillToMeshAndClear");
-		_decalMeshBuilder.FillToMeshAndClear(_decalMeshFilter.sharedMesh);
+		if(_decalMeshFilter)
+		{
+			_decalMeshBuilder.FillToMeshAndClear(_decalMeshFilter.sharedMesh);
+		}
 		Profiler.EndSample();
 	}
 
