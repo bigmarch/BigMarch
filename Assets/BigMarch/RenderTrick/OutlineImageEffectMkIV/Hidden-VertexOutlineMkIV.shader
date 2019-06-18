@@ -1,9 +1,13 @@
 // Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
 
-Shader "Hidden/VertexOutline"
+Shader "Hidden/VertexOutlineMkIV"
 {
 	Properties
 	{
+		_LineColor("Line Color", Color) = (1,0,0,1)
+		_LineWidth("Line Width", Float) = 0.225
+		_LineDepthOffset("Line Depth Offset", Float) = 0
+		_LineVertexExpandZ("Line Vertex Expand Z", Float) = 0
 	}
 	
 	SubShader
@@ -20,9 +24,9 @@ Shader "Hidden/VertexOutline"
 				ZFail[_StencilZFail]
 			}
 
-			Tags{ "LightMode" = "ForwardBase" "Queue" = "Transparent" "IgnoreProjectors" = "True" "RenderType" = "Transparent" }
+			Tags{"Queue" = "Transparent" "RenderType" = "Transparent" }
 
-			Cull Front
+			Cull Off
 			Blend SrcAlpha OneMinusSrcAlpha
 			ZTest LEqual
 
@@ -35,9 +39,12 @@ Shader "Hidden/VertexOutline"
 			#pragma vertex TCP2_Outline_Vert
 			#pragma fragment TCP2_Outline_Frag
 			
-			float _Outline;
-			float _ZSmooth;
-
+			float _LineWidth;
+			//float _ZSmooth;
+            fixed4 _LineColor;
+            float _LineDepthOffset;
+            float _LineVertexExpandZ;
+            
 			struct a2v
 			{
 				float4 vertex : POSITION;
@@ -51,8 +58,6 @@ Shader "Hidden/VertexOutline"
 
 			v2f TCP2_Outline_Vert(a2v v)
 			{
-				_Outline = 1;
-
 				v2f o;
 /*
 				//Correct Z artefacts
@@ -83,59 +88,69 @@ Shader "Hidden/VertexOutline"
 
 #endif
 */
-				// ¸ú¾àÀëÓĞ¹Ø¹ØµÄ¶¥µãÍâÍØ£¬const size¡£
+				// è·Ÿè·ç¦»æœ‰å…³å…³çš„é¡¶ç‚¹å¤–æ‹“ï¼Œconst sizeã€‚
 			/*	float3 normal = v.normal;
 				float dist = distance(_WorldSpaceCameraPos, mul(unity_ObjectToWorld, v.vertex));
 				float3 pos = UnityObjectToViewPos(v.vertex.xyz + normal * _Outline * 0.01 * dist);
 				o.pos = mul(UNITY_MATRIX_P, float4(pos.xyz, 1));*/
 
-				/*
-				// ¼ÆËã¾àÀë
+				
+				// è®¡ç®—è·ç¦»
 				//float dist = distance(_WorldSpaceCameraPos, mul(unity_ObjectToWorld, v.vertex));
-				// ÊÀ½ç¿Õ¼äµÄ·¨Ïß
+				// ä¸–ç•Œç©ºé—´çš„æ³•çº¿				
 				float3 normalInWorld = UnityObjectToWorldNormal(v.normal);
-				// ÉãÏñ»ú¿Õ¼äµÄ·¨Ïß
+				// æ‘„åƒæœºç©ºé—´çš„æ³•çº¿
 				float4 normalInView = mul(UNITY_MATRIX_V, fixed4(normalInWorld, 0.0));
-				// ÉãÏñ»ú¿Õ¼äµÄ·¨Ïß
+				// æ‘„åƒæœºç©ºé—´çš„ä½ç½®
 				float3 posInView = UnityObjectToViewPos(v.vertex.xyz);			
-				// ¶¥µãÔÚÉãÏñ»ú¿Õ¼äÍâÕ¹£¬abs(posInView.z)ÎªÊ²Ã´ÒªÈ¡¾ø¶ÔÖµ£¬Ã»ÏëÃ÷°×¡£
-				posInView += float3(normalInView.xy, 0) * _Outline * 0.01 * abs(posInView.z);
-				// ¶¥µãÎ»ÖÃÊä³ö
-				o.pos = mul(UNITY_MATRIX_P, float4(posInView.xyz, 1));*/
+				
+				normalInView.xy *= _LineWidth * 0.01 * abs(posInView.z);
+				
+				normalInView.z = _LineVertexExpandZ;
+				
+				// é¡¶ç‚¹åœ¨æ‘„åƒæœºç©ºé—´å¤–å±•ï¼Œabs(posInView.z)ä¸ºä»€ä¹ˆè¦å–ç»å¯¹å€¼ï¼Œæ²¡æƒ³æ˜ç™½ã€‚
+				posInView += normalInView;
+				//posInView += float3(0,0, normalInView.z) * 1;
+				posInView.z += _LineDepthOffset;
+				// é¡¶ç‚¹ä½ç½®è¾“å‡ºqw
+				o.pos = mul(UNITY_MATRIX_P, float4(posInView.xyz, 1));
 
 				/*
-				// ¼ÆËã¾àÀë
+				// è®¡ç®—è·ç¦»
 				//float dist = distance(_WorldSpaceCameraPos, mul(unity_ObjectToWorld, v.vertex));
-				// ÊÀ½ç¿Õ¼äµÄ·¨Ïß
+				// ä¸–ç•Œç©ºé—´çš„æ³•çº¿
 				float3 normalInWorld = UnityObjectToWorldNormal(v.normal);
-				// ÉãÏñ»ú¿Õ¼äµÄ·¨Ïß
+				// æ‘„åƒæœºç©ºé—´çš„æ³•çº¿
 				float4 normalInP = mul(UNITY_MATRIX_VP, fixed4(normalInWorld, 0.0));
-				// ÉãÏñ»ú¿Õ¼äµÄ·¨Ïß
+				// æ‘„åƒæœºç©ºé—´çš„æ³•çº¿
 				float3 posInView = UnityObjectToViewPos(v.vertex.xyz);
-				// ¶¥µãÎ»ÖÃÊä³ö
+				// é¡¶ç‚¹ä½ç½®è¾“å‡º
 				o.pos = mul(UNITY_MATRIX_P, float4(posInView.xyz, 1));
 
 				float4 delta = float4(normalInP.xy, 0, 0) * _Outline * 0.01;// *abs(posInView.z);
 
-				// ¶¥µãÔÚÉãÏñ»ú¿Õ¼äÍâÕ¹£¬abs(posInView.z)ÎªÊ²Ã´ÒªÈ¡¾ø¶ÔÖµ£¬Ã»ÏëÃ÷°×¡£
+				// é¡¶ç‚¹åœ¨æ‘„åƒæœºç©ºé—´å¤–å±•ï¼Œabs(posInView.z)ä¸ºä»€ä¹ˆè¦å–ç»å¯¹å€¼ï¼Œæ²¡æƒ³æ˜ç™½ã€‚
 				o.pos += delta;
 				*/
 
-				// »ñÈ¡Ä£ĞÍµÄ×îÖÕµÄÍ¶Ó°×ø±ê  
-				o.pos = UnityObjectToClipPos(v.vertex);
-				// UNITY_MATRIX_IT_MVÎª¡¾Ä£ĞÍ×ø±ê-ÊÀ½ç×ø±ê-ÉãÏñ»ú×ø±ê¡¿¡¾×¨ÃÅÕë¶Ô·¨ÏßµÄ±ä»»¡¿  
-				// ·¨Ïß³ËÒÔMV£¬½«Ä£ĞÍ¿Õ¼ä ×ª»» ÊÓÍ¼¿Õ¼ä  
+                /*float3 cameraPos = UnityObjectToViewPos(v.vertex);
+ 				cameraPos.z += _LineDepthOffset;
+
+				// UNITY_MATRIX_IT_MVä¸ºã€æ¨¡å‹åæ ‡-ä¸–ç•Œåæ ‡-æ‘„åƒæœºåæ ‡ã€‘ã€ä¸“é—¨é’ˆå¯¹æ³•çº¿çš„å˜æ¢ã€‘  
+				// æ³•çº¿ä¹˜ä»¥MVï¼Œå°†æ¨¡å‹ç©ºé—´ è½¬æ¢ è§†å›¾ç©ºé—´  
 				float3 norm = mul((float3x3)UNITY_MATRIX_IT_MV, v.normal);
-				// ×ª»» ÊÓÍ¼¿Õ¼ä µ½ Í¶Ó°¿Õ¼ä ¡¾3D×ª2D¡¿  
-				float2 offset = TransformViewToProjection(norm.xy);
-				// µÃµ½µÄoffset£¬Ä£ĞÍ±»¼·µÄ·Ç³£´ó£¬È»ºó³ËÒÔ±¶ÂÊ  
-				o.pos.xy += normalize(offset) * 0.01 * _Outline * o.pos.w;
+				
+                cameraPos.xy += normalize(norm) * _LineWidth;
+ 
+				// è·å–æ¨¡å‹çš„æœ€ç»ˆçš„æŠ•å½±åæ ‡  
+				o.pos = mul(UNITY_MATRIX_P, float4(cameraPos.xyz, 1));*/
+				
 				return o;
 			}
 
 			float4 TCP2_Outline_Frag(v2f IN) : COLOR
 			{
-				return float4(1,1,1,1);
+				return _LineColor;
 			}
 						
 			ENDCG
