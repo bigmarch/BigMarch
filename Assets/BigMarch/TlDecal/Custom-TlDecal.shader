@@ -47,7 +47,7 @@
 
             UNITY_DECLARE_DEPTH_TEXTURE(_CameraDepthTexture);
 
-			//float4x4 _CurrentInverseVP;
+			float4x4 _CurrentInverseVP;
 			
 			v2f vert (appdata v)
 			{
@@ -69,23 +69,16 @@
                 float linear01Depth = Linear01Depth(depth); //转换成[0,1]内的线性变化深度值
                 float linearEyeDepth = LinearEyeDepth(depth); //转换到摄像机空间
 
-				return fixed4(linear01Depth.xxx, 1);			
-
-				
-				//float sceneZ = LinearEyeDepth (depth);
-                //float partZ = i.projPos.z;
-                
-				//float2 screenUV = i.proj.xy / i.proj.w;
-                
-               /*
-                float4 H = float4(i.screenPos.x * 2 - 1, i.screenPos.y * 2 - 1, depth * 2 - 1, 1); //NDC坐标
+				//return fixed4(linear01Depth.xxx, 1);              
+               
+                float4 H = float4(i.screenPos.x * 2 - 1, i.screenPos.y * 2 - 1, linearEyeDepth * 2 - 1, 1); //NDC坐标
                 float4 D = mul(_CurrentInverseVP, H);
                 //将齐次坐标 w 分量变 1 得到世界坐。
                 float4 W = D / D.w; 
                 
-                return fixed4(W.rgb,1);
+                return fixed4(W.xy, 0, 1);
                 
-                */
+                
                 // 至此，W 是深度图上某一点的世界坐标。
                 
                 /*float4 pjUV = W * 0.5 + 0.5;
